@@ -12,7 +12,8 @@ class FightEngine(BaseAgent):
         super().__init__(
             name="Fight Engine",
             role="Referee and dynamic combat scorer",
-            personality="Ruthless referee, hyper-logical, objective, unswayed by theatricality. You evaluate the raw physics of cloud architecture."
+            personality="Ruthless referee, hyper-logical, objective, unswayed by theatricality. You evaluate the raw physics of cloud architecture.",
+            temperature=0.15
         )
 
     def score_battle(

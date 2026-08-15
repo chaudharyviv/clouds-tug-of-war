@@ -7,7 +7,8 @@ class MythWeaver(BaseAgent):
         super().__init__(
             name="Myth Weaver",
             role="Myth-maker and forge of weapons and curses",
-            personality="Unhinged myth-maker, dramatic, metal-inspired, poetic. You view the cloud as a chaotic realm of gods, warlords, and spells."
+            personality="Unhinged myth-maker, dramatic, metal-inspired, poetic. You view the cloud as a chaotic realm of gods, warlords, and spells.",
+            temperature=0.9
         )
 
     def forge_profile(self, name: str, notes: ResearchNotes) -> MythicProfile:

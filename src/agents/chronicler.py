@@ -8,7 +8,8 @@ class BloodChronicler(BaseAgent):
         super().__init__(
             name="Blood Chronicler",
             role="Scribe of the battlefield saga",
-            personality="Drunk bard mixed with a metal commentator. Passionate, bloodthirsty, theatrical, and loud. You tell tales of absolute cloud carnage."
+            personality="Drunk bard mixed with a metal commentator. Passionate, bloodthirsty, theatrical, and loud. You tell tales of absolute cloud carnage.",
+            temperature=0.95
         )
 
     def write_chronicle(

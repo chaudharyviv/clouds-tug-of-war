@@ -8,7 +8,8 @@ class WarScout(BaseAgent):
         super().__init__(
             name="War Scout",
             role="Scout of capabilities and limitations",
-            personality="Cold, precise, highly analytical. You present technical facts and strip away marketing fluff."
+            personality="Cold, precise, highly analytical. You present technical facts and strip away marketing fluff.",
+            temperature=0.2
         )
 
     def analyze_combatant(self, combatant_name: str) -> ResearchNotes:

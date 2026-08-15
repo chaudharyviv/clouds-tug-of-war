@@ -13,7 +13,7 @@ class SearchService:
         api_key = os.getenv("TAVILY_API_KEY")
         
         # If API key is missing or is the placeholder, return mock results
-        if not api_key or api_key.startswith("tvly-"):
+        if not api_key or api_key == "tvly-...":
             print("WARNING: TAVILY_API_KEY is not set. Returning mock search results.")
             return SearchService._get_mock_results(query)
             

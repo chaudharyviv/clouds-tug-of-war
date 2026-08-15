@@ -9,19 +9,28 @@ load_dotenv()
 T = TypeVar('T', bound=BaseModel)
 
 class LLMService:
+    _client = None
+
+    @classmethod
+    def _get_client(cls):
+        """Returns a cached OpenAI client instance, creating one if needed."""
+        if cls._client is None:
+            openai_key = os.getenv("OPENAI_API_KEY")
+            if openai_key and openai_key != "sk-...":
+                from openai import OpenAI
+                cls._client = OpenAI(api_key=openai_key)
+        return cls._client
+
     @staticmethod
     def query(prompt: str, system_prompt: str = "", temperature: float = 0.2) -> str:
         """
         Sends a query to the selected LLM provider.
         Supports OpenAI, with a mock fallback for testing.
         """
-        # Read API Keys from environment
-        openai_key = os.getenv("OPENAI_API_KEY")
+        client = LLMService._get_client()
 
-        if openai_key and not openai_key.startswith("sk-..."):
+        if client:
             try:
-                from openai import OpenAI
-                client = OpenAI(api_key=openai_key)
                 messages = []
                 if system_prompt:
                     messages.append({"role": "system", "content": system_prompt})

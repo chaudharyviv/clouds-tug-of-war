@@ -3,9 +3,16 @@ from src.models.battlefield import Battlefield
 from src.models.battle import ResearchNotes, BattleResult, DimensionScorecard
 from src.models.combatant import Champion
 from src.config import BATTLE_DIMENSIONS
-from typing import Dict
+from typing import Dict, List
 from pydantic import BaseModel
 import json
+
+class RawScores(BaseModel):
+    """Temporary structured container for parsing raw LLM dimension scores."""
+    scores_a: Dict[str, float]
+    scores_b: Dict[str, float]
+    decisive_blows: List[str]
+
 
 class FightEngine(BaseAgent):
     def __init__(self):
@@ -30,6 +37,8 @@ class FightEngine(BaseAgent):
         """
         # Ask LLM to evaluate baseline score from 0-100 on ALL 10 dimensions for both combatants
         # based on their research notes and the battlefield conditions.
+        # Format dimensions as a numbered list for reliable LLM matching
+        dims_formatted = "\n".join(f"  {i+1}. {d}" for i, d in enumerate(BATTLE_DIMENSIONS))
         prompt = (
             f"You must grade a duel between two combatants on the battlefield '{battlefield.name}' ({battlefield.description}).\n\n"
             f"Combatant A: {champion_a.name}\n"
@@ -37,16 +46,10 @@ class FightEngine(BaseAgent):
             f"Combatant B: {champion_b.name}\n"
             f"Research Notes B: {notes_b.model_dump_json(indent=2)}\n\n"
             f"For each of the following 10 dimensions, provide an objective score from 0 to 100 for both A and B:\n"
-            f"{BATTLE_DIMENSIONS}\n\n"
+            f"{dims_formatted}\n\n"
             f"Provide your evaluation in a JSON structure containing 'scores_a' and 'scores_b' dicts mapping dimension names to float scores.\n"
             f"Also include 'decisive_blows' representing 2-3 technical reasons that swung key dimensions."
         )
-        
-        # Temporary structured container for parsing raw scores
-        class RawScores(BaseModel):
-            scores_a: Dict[str, float]
-            scores_b: Dict[str, float]
-            decisive_blows: list[str]
 
         raw_scores = self.query_llm_structured(prompt, RawScores)
         

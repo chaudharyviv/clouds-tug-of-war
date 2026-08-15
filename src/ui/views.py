@@ -120,7 +120,7 @@ class ArenaViews:
         st.markdown(f"**Field rules:** _Rewards {battlefield.rewards}_ | _Suffers {battlefield.suffers}_")
 
         st.write("")
-        trigger_battle = st.button("Stage the slaughter", use_container_width=True)
+        trigger_battle = st.button("Stage the slaughter", width="stretch")
 
         if trigger_battle:
             if champion_a.name == champion_b.name:
@@ -193,7 +193,7 @@ class ArenaViews:
             )
 
             # Click action triggers comeback recalculation
-            if st.button(f"Activate Second Wind for {result.loser_name}", use_container_width=True):
+            if st.button(f"Activate Second Wind for {result.loser_name}", width="stretch"):
                 with st.spinner("Gathering core strength from research..."):
                     updated_result, updated_chronicle = self.orchestrator.apply_second_wind(
                         champion_a, champion_b, battlefield, result
@@ -249,7 +249,7 @@ class ArenaViews:
         # Navigation / Storage actions
         col_nav1, col_nav2 = st.columns(2)
         with col_nav1:
-            if st.button("Save fight to Codex history", use_container_width=True):
+            if st.button("Save fight to Codex history",width="stretch"):
                 entry = CodexEntry(
                     id=str(uuid.uuid4())[:8],
                     timestamp=datetime.utcnow(),
@@ -262,7 +262,7 @@ class ArenaViews:
                 CodexService.save_entry(entry)
                 st.success("Fight logged to Codex!")
         with col_nav2:
-            if st.button("Stage another fight", use_container_width=True):
+            if st.button("Stage another fight", width="stretch"):
                 self._reset_battle_state()
                 st.rerun()
 

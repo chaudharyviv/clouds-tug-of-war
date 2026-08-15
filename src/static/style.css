@@ -1,27 +1,33 @@
 /* ============================================================
-   CLOUD BLOODBATH — Folklore x Thug-of-War x Cloud Carnage
-   Palette & type system lifted from cloud_bloodbath_mockup.html
+   CLOUD BLOODBATH — Neural War Neon (2026 AI-cloud cyberpunk)
+   Electric violet + cyan on a near-black void, magenta reserved
+   for danger/curses. Same structure as the folklore theme, fully
+   reskinned via these variables.
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
-    --bg-void: #0b0906;
-    --bg-arena: #151009;
-    --bg-panel: #1c1610;
-    --ember: #d9a441;
-    --ember-dim: #8a6a2a;
-    --blood: #c1272d;
-    --blood-dim: #5c1215;
-    --bone: #eee4cf;
-    --bone-dim: #a89a80;
-    --line: #3a2f20;
+    --bg-void: #050318;
+    --bg-arena: #0a0620;
+    --bg-panel: #10082c;
+    --ember: #b026ff;        /* primary neon accent — electric violet */
+    --ember-dim: #5c1f8f;
+    --blood: #ff2d95;        /* danger / curses — neon magenta */
+    --blood-dim: #6b1145;
+    --cyan: #00eaff;         /* secondary neon accent */
+    --cyan-dim: #0a5f6e;
+    --bone: #eef0ff;
+    --bone-dim: #9092c0;
+    --line: #2a1f55;
 }
 
 /* Global application background & type */
 .stApp {
     background:
-        radial-gradient(ellipse at 50% -10%, rgba(217, 164, 65, 0.10), transparent 55%),
-        radial-gradient(ellipse at 50% 110%, rgba(193, 39, 45, 0.08), transparent 55%),
+        radial-gradient(ellipse at 15% -10%, rgba(176, 38, 255, 0.16), transparent 50%),
+        radial-gradient(ellipse at 85% 0%, rgba(0, 234, 255, 0.12), transparent 50%),
+        radial-gradient(ellipse at 50% 115%, rgba(255, 45, 149, 0.10), transparent 55%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
         var(--bg-void);
     color: var(--bone);
     font-family: 'IBM Plex Sans', sans-serif;
@@ -42,18 +48,18 @@ h1, h2, h3, h4 { color: var(--bone); }
 .battlefield-banner .eyebrow {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--ember-dim);
+    color: var(--cyan);
 }
 .battlefield-banner .name {
-    font-family: 'Cinzel', serif;
-    font-weight: 600;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
     font-size: 22px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: var(--ember);
-    margin-top: 6px;
-    text-shadow: 0 0 18px rgba(217, 164, 65, 0.35);
+    margin-top: 8px;
+    text-shadow: 0 0 8px rgba(176, 38, 255, 0.9), 0 0 26px rgba(176, 38, 255, 0.45);
 }
 .battlefield-banner .terrain {
     font-family: 'IBM Plex Sans', sans-serif;
@@ -65,10 +71,11 @@ h1, h2, h3, h4 { color: var(--bone); }
     margin-right: auto;
 }
 .battlefield-banner .rule {
-    width: 120px;
+    width: 140px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--line), transparent);
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--ember), transparent);
     margin: 14px auto 0;
+    box-shadow: 0 0 8px rgba(0, 234, 255, 0.6);
 }
 
 /* ---------- VS row ---------- */
@@ -85,20 +92,20 @@ h1, h2, h3, h4 { color: var(--bone); }
     padding: 26px 22px;
     position: relative;
     overflow: hidden;
-    transition: opacity 0.3s ease, filter 0.3s ease, border-color 0.3s ease;
+    transition: opacity 0.3s ease, filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
-.fighter.left { border-right: none; clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%); }
-.fighter.right { border-left: none; clip-path: polygon(6% 0, 100% 0, 100% 100%, 0 100%); text-align: right; }
+.fighter.left { border-right: none; clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%); border-color: rgba(255, 45, 149, 0.35); }
+.fighter.right { border-left: none; clip-path: polygon(6% 0, 100% 0, 100% 100%, 0 100%); text-align: right; border-color: rgba(0, 234, 255, 0.35); }
 .fighter::before {
     content: '';
     position: absolute; inset: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(193, 39, 45, 0.10), transparent 60%);
+    background: radial-gradient(circle at 30% 20%, rgba(255, 45, 149, 0.14), transparent 60%);
     pointer-events: none;
 }
-.fighter.right::before { background: radial-gradient(circle at 70% 20%, rgba(217, 164, 65, 0.10), transparent 60%); }
+.fighter.right::before { background: radial-gradient(circle at 70% 20%, rgba(0, 234, 255, 0.14), transparent 60%); }
 
-.fighter.victor { border-color: var(--ember) !important; box-shadow: 0 0 30px rgba(217, 164, 65, 0.18); }
-.fighter.defeated { opacity: 0.45; filter: grayscale(75%); }
+.fighter.victor { border-color: var(--ember) !important; box-shadow: 0 0 34px rgba(176, 38, 255, 0.35), inset 0 0 24px rgba(176, 38, 255, 0.08); }
+.fighter.defeated { opacity: 0.4; filter: grayscale(85%) brightness(0.8); }
 
 .faction-tag {
     font-family: 'IBM Plex Mono', monospace;
@@ -106,11 +113,12 @@ h1, h2, h3, h4 { color: var(--bone); }
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--blood);
+    text-shadow: 0 0 6px rgba(255, 45, 149, 0.5);
 }
-.fighter.right .faction-tag { color: var(--ember); }
+.fighter.right .faction-tag { color: var(--cyan); text-shadow: 0 0 6px rgba(0, 234, 255, 0.5); }
 
 .epithet {
-    font-family: 'Cinzel', serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-size: 13px;
     color: var(--bone-dim);
     margin-top: 8px;
@@ -118,12 +126,13 @@ h1, h2, h3, h4 { color: var(--bone); }
 }
 
 .champ-name {
-    font-family: 'Cinzel Decorative', serif;
-    font-weight: 700;
-    font-size: 28px;
-    line-height: 1.1;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 1.2;
     margin-top: 10px;
     color: var(--bone);
+    letter-spacing: 0.02em;
 }
 
 .stat-block {
@@ -149,8 +158,8 @@ h1, h2, h3, h4 { color: var(--bone); }
     background: #000;
     border: 1px solid var(--line);
 }
-.bar-fill { height: 100%; background: linear-gradient(90deg, var(--blood-dim), var(--blood)); }
-.fighter.right .bar-fill { background: linear-gradient(270deg, var(--ember-dim), var(--ember)); float: right; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--blood-dim), var(--blood)); box-shadow: 0 0 8px rgba(255, 45, 149, 0.6); }
+.fighter.right .bar-fill { background: linear-gradient(270deg, var(--cyan-dim), var(--cyan)); box-shadow: 0 0 8px rgba(0, 234, 255, 0.6); float: right; }
 
 .vs-center {
     display: flex;
@@ -162,26 +171,27 @@ h1, h2, h3, h4 { color: var(--bone); }
     border-bottom: 1px solid var(--line);
 }
 .vs-mark {
-    font-family: 'Cinzel Decorative', serif;
+    font-family: 'Orbitron', sans-serif;
     font-weight: 900;
-    font-size: 30px;
+    font-size: 28px;
     color: var(--bone);
-    text-shadow: 0 0 24px rgba(193, 39, 45, 0.55), 0 0 4px rgba(217, 164, 65, 0.6);
+    text-shadow: 0 0 10px rgba(176, 38, 255, 0.9), 0 0 24px rgba(0, 234, 255, 0.6);
     z-index: 2;
 }
 .vs-crack {
     position: absolute;
     top: 0; bottom: 0; left: 50%;
     width: 2px;
-    background: linear-gradient(180deg, transparent, var(--ember), var(--blood), var(--ember), transparent);
+    background: linear-gradient(180deg, transparent, var(--blood), var(--ember), var(--cyan), transparent);
     transform: translateX(-50%);
-    opacity: 0.7;
+    opacity: 0.85;
+    box-shadow: 0 0 12px rgba(176, 38, 255, 0.6);
 }
 
 /* ---------- Prophecy ---------- */
 .prophecy {
     text-align: center;
-    font-family: 'Cinzel', serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-style: italic;
     font-size: 15px;
     line-height: 1.9;
@@ -189,13 +199,13 @@ h1, h2, h3, h4 { color: var(--bone); }
     max-width: 560px;
     margin: 0 auto 22px;
 }
-.prophecy strong { color: var(--bone); font-style: normal; }
+.prophecy strong { color: var(--cyan); font-style: normal; }
 
 /* ---------- Verdict strip (always visible, always literal) ---------- */
 .verdict-strip {
     background: var(--bg-panel);
-    border: 1px solid var(--blood);
-    border-left: 4px solid var(--blood);
+    border: 1px solid var(--ember);
+    border-left: 4px solid var(--ember);
     padding: 18px 22px;
     text-align: center;
     font-family: 'IBM Plex Mono', monospace;
@@ -204,19 +214,20 @@ h1, h2, h3, h4 { color: var(--bone); }
     letter-spacing: 0.04em;
     color: var(--bone);
     margin: 22px 0;
+    box-shadow: 0 0 24px rgba(176, 38, 255, 0.2);
 }
 
 /* ---------- Second wind ---------- */
 .second-wind-banner {
     background: var(--bg-panel);
     border: 1px solid var(--line);
-    border-left: 4px solid var(--ember);
+    border-left: 4px solid var(--cyan);
     padding: 14px 18px;
     margin: 14px 0;
     font-style: italic;
     color: var(--bone-dim);
 }
-.second-wind-banner strong { color: var(--ember); font-style: normal; }
+.second-wind-banner strong { color: var(--cyan); font-style: normal; }
 
 /* ---------- Dimension scorecard ---------- */
 .scorecard {
@@ -229,7 +240,7 @@ h1, h2, h3, h4 { color: var(--bone); }
     font-size: 11px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--ember-dim);
+    color: var(--cyan);
     margin-bottom: 16px;
 }
 .dim-row {
@@ -242,7 +253,7 @@ h1, h2, h3, h4 { color: var(--bone); }
     font-size: 12px;
 }
 .dim-val { color: var(--bone-dim); }
-.dim-val.win { color: var(--ember); font-weight: 500; }
+.dim-val.win { color: var(--ember); font-weight: 500; text-shadow: 0 0 6px rgba(176, 38, 255, 0.5); }
 .dim-val.right-val { text-align: right; }
 .dim-name {
     text-align: center;
@@ -253,17 +264,18 @@ h1, h2, h3, h4 { color: var(--bone); }
     margin-bottom: 14px;
 }
 .tug-track { height: 4px; background: var(--blood-dim); position: relative; width: 100%; }
-.tug-fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--ember); }
+.tug-fill { position: absolute; top: 0; bottom: 0; left: 0; background: linear-gradient(90deg, var(--ember), var(--cyan)); box-shadow: 0 0 8px rgba(176, 38, 255, 0.5); }
 
 /* ---------- Saga / chronicle ---------- */
 .saga-box {
-    font-family: 'Cinzel', serif;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-style: italic;
     font-size: 1.05rem;
     line-height: 1.75;
     color: var(--bone);
     background: var(--bg-panel);
     border: 1px solid var(--line);
+    border-left: 3px solid var(--blood);
     padding: 24px;
 }
 
@@ -280,6 +292,7 @@ h1, h2, h3, h4 { color: var(--bone); }
 /* ---------- Widget theming ---------- */
 div[data-testid="stProgress"] div[role="progressbar"] > div {
     background-color: var(--ember) !important;
+    box-shadow: 0 0 8px rgba(176, 38, 255, 0.6);
 }
 div[data-testid="stProgress"] div[role="progressbar"] {
     background-color: #000 !important;
@@ -291,9 +304,11 @@ div[data-testid="stProgress"] div[role="progressbar"] {
     text-transform: uppercase;
     background: var(--bg-panel);
     color: var(--bone);
-    border: 1px solid var(--blood);
+    border: 1px solid var(--ember);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 .stButton > button:hover {
-    border-color: var(--ember);
-    color: var(--ember);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 16px rgba(0, 234, 255, 0.35);
 }

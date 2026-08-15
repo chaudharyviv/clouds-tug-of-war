@@ -22,14 +22,10 @@ class RawScores(BaseModel):
     )
 
 
-def _pick_second_wind_fact(notes: ResearchNotes, index: int) -> str:
-    """Resolves the LLM's chosen capability index into a real research fact, with a
-    safe fallback if the index is missing or out of range."""
-    if notes.capabilities and 0 <= index < len(notes.capabilities):
-        return notes.capabilities[index]
-    if notes.capabilities:
-        return notes.capabilities[0]
-    return "A desperate attempt to fallback on legacy backup protocols."
+class SecondWindPick(BaseModel):
+    """Battlefield-aware selection of a capability for Second Wind comeback."""
+    fact: str = Field(..., description="The exact capability chosen (must match original list)")
+    reason: str = Field(..., description="One short sentence: why this capability matters on this battlefield")
 
 
 class FightEngine(BaseAgent):
@@ -40,6 +36,51 @@ class FightEngine(BaseAgent):
             personality="Ruthless referee, hyper-logical, objective, unswayed by theatricality. You evaluate the raw physics of cloud architecture.",
             temperature=0.15
         )
+
+    def _pick_second_wind_fact(
+        self,
+        loser_name: str,
+        losing_notes: ResearchNotes,
+        battlefield: Battlefield,
+    ) -> tuple[str, str]:
+        """
+        Choose the single most battlefield-relevant real capability
+        for the losing side's Second Wind. Falls back safely.
+        """
+        if not losing_notes.capabilities:
+            return (
+                "A desperate attempt to fall back on residual operational resilience.",
+                "No strong researched capability was available."
+            )
+
+        # Cheap path: only one capability → use it
+        if len(losing_notes.capabilities) == 1:
+            return losing_notes.capabilities[0], "Only researched capability available."
+
+        prompt = (
+            f"Combatant '{loser_name}' is losing on battlefield '{battlefield.name}'.\n"
+            f"Battlefield rewards: {battlefield.rewards}\n"
+            f"Battlefield punishes: {battlefield.suffers}\n\n"
+            f"Their researched capabilities (you MUST pick one of these exactly):\n"
+            + "\n".join(f"- {c}" for c in losing_notes.capabilities)
+            + "\n\n"
+            f"Pick the SINGLE capability that gives them the strongest realistic "
+            f"counter-strike on THIS battlefield. Do not invent new facts.\n"
+            f"Return JSON with:\n"
+            f"- fact: the exact capability string you chose\n"
+            f"- reason: one short sentence explaining why it matters here"
+        )
+
+        try:
+            pick = self.query_llm_structured(prompt, SecondWindPick)
+            # Safety: only accept if the model actually chose from the list
+            if pick.fact in losing_notes.capabilities:
+                return pick.fact, pick.reason
+        except Exception:
+            pass
+
+        # Fallback: first capability (old behavior)
+        return losing_notes.capabilities[0], "Fallback selection."
 
     def score_battle(
         self, 
@@ -105,18 +146,17 @@ class FightEngine(BaseAgent):
             loser_name = champion_b.name
             margin = total_score_a - total_score_b
             losing_notes = notes_b
-            losing_capability_index = raw_scores.best_capability_index_b
         else:
             winner_name = champion_b.name
             loser_name = champion_a.name
             margin = total_score_b - total_score_a
             losing_notes = notes_a
-            losing_capability_index = raw_scores.best_capability_index_a
 
-        # Extract the battlefield-relevant research point for the losing side's potential
-        # Second Wind (picked above, not just capabilities[0]).
-        second_wind_fact = _pick_second_wind_fact(losing_notes, losing_capability_index)
-        
+        # Pick the most battlefield-relevant capability for the losing side's Second Wind
+        second_wind_fact, second_wind_reason = self._pick_second_wind_fact(
+            loser_name, losing_notes, battlefield
+        )
+
         # Calculate dynamic Second Wind impact based on how relevant their best capability is to the battlefield
         second_wind_impact = round(margin * 0.4 + 5.0, 1)  # Usually narrows the margin, sometimes flips it if close
 
@@ -131,6 +171,7 @@ class FightEngine(BaseAgent):
             margin=round(margin, 2),
             second_wind_triggered=False,
             second_wind_fact=second_wind_fact,
+            second_wind_reason=second_wind_reason,
             second_wind_impact=second_wind_impact,
             decisive_blows=raw_scores.decisive_blows,
             scorecards=scorecards

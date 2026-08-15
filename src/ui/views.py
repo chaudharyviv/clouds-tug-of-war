@@ -38,76 +38,82 @@ class ArenaViews:
             unsafe_allow_html=True
         )
 
-        # 1. Seeded Grudge Matches Quick Selection
-        st.markdown("### Classic grudge matches")
+        # 1. Fighter selection mode — grudge match OR custom A vs B, never both at
+        # once. Keeping these on mutually exclusive branches (rather than trying to
+        # sync defaults into the same widgets) avoids Streamlit's keyed-widget state
+        # sticking to a stale value when you switch between the two.
+        st.markdown("### Choose your fighters")
+        fighter_mode = st.segmented_control(
+            "Fighter selection mode",
+            options=["Grudge match", "Custom A vs B"],
+            default="Custom A vs B",
+            required=True,
+            label_visibility="collapsed",
+            key="fighter_mode"
+        )
+
         grudge_matches = [
-            ("None", None),
             ("GPU Rebellion (CoreWeave vs AWS)", ("CoreWeave", "AWS", "AI Training Killing Fields")),
             ("Edge Skirmish (Cloudflare vs GCP)", ("Cloudflare", "GCP", "Edge Ambush Terrain")),
             ("Sovereignty Clash (OVHcloud vs Azure)", ("OVHcloud", "Azure", "Sovereignty Fortress")),
             ("Cost Bleedout (Old Fortress On-Prem vs AWS)", ("Old Fortress On-Prem", "AWS", "Cost Wasteland")),
         ]
-        
-        selected_grudge_idx = st.selectbox(
-            "Quick-load a legendary clash of cloud realms:",
-            range(len(grudge_matches)),
-            format_func=lambda i: grudge_matches[i][0]
-        )
-        
-        grudge_data = grudge_matches[selected_grudge_idx][1]
-        
-        # Determine defaults based on select box
-        default_a = "AWS"
-        default_b = "CoreWeave"
+        all_champion_names = [c.name for c in DEFAULT_CHAMPIONS] + ["Custom Fighter..."]
         default_field = "AI Training Killing Fields"
-        
-        if grudge_data:
-            default_a, default_b, default_field = grudge_data
-            
+
+        if fighter_mode == "Grudge match":
+            selected_grudge_idx = st.selectbox(
+                "Quick-load a legendary clash of cloud realms:",
+                range(len(grudge_matches)),
+                format_func=lambda i: grudge_matches[i][0],
+                key="grudge_idx"
+            )
+            grudge_a, grudge_b, default_field = grudge_matches[selected_grudge_idx][1]
+            champion_a = next(c for c in DEFAULT_CHAMPIONS if c.name == grudge_a)
+            champion_b = next(c for c in DEFAULT_CHAMPIONS if c.name == grudge_b)
+            st.markdown(f"**{champion_a.name}** vs **{champion_b.name}**")
+
+        else:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("**Combatant A**")
+                choice_a = st.selectbox(
+                    "Select Champion A:",
+                    all_champion_names,
+                    key="choice_a"
+                )
+
+                if choice_a == "Custom Fighter...":
+                    name_a = st.text_input("Enter Name A:", value="Custom Warlord A")
+                    faction_a = st.selectbox("Faction A:", [f.value for f in FactionType], key="fac_a")
+                    desc_a = st.text_area("Description A:", "A specialized challenger entering the arena.")
+                    champion_a = Champion(name=name_a, faction=FactionType(faction_a), description=desc_a)
+                else:
+                    champion_a = next(c for c in DEFAULT_CHAMPIONS if c.name == choice_a)
+
+            with col2:
+                st.markdown("**Combatant B**")
+                choice_b = st.selectbox(
+                    "Select Champion B:",
+                    all_champion_names,
+                    index=all_champion_names.index("CoreWeave") if "CoreWeave" in all_champion_names else 1,
+                    key="choice_b"
+                )
+
+                if choice_b == "Custom Fighter...":
+                    name_b = st.text_input("Enter Name B:", value="Custom Warlord B")
+                    faction_b = st.selectbox("Faction B:", [f.value for f in FactionType], key="fac_b")
+                    desc_b = st.text_area("Description B:", "A specialized challenger entering the arena.")
+                    champion_b = Champion(name=name_b, faction=FactionType(faction_b), description=desc_b)
+                else:
+                    champion_b = next(c for c in DEFAULT_CHAMPIONS if c.name == choice_b)
+
         st.markdown("<hr style='border-color: var(--line);'/>", unsafe_allow_html=True)
 
-        # 2. Combatant Selection Forms
-        st.markdown("### Choose your warlords")
-        
-        col1, col2 = st.columns(2)
-        
-        all_champion_names = [c.name for c in DEFAULT_CHAMPIONS] + ["Custom Fighter..."]
-        
-        with col1:
-            st.markdown("**Combatant A**")
-            choice_a = st.selectbox(
-                "Select Champion A:", 
-                all_champion_names, 
-                index=all_champion_names.index(default_a) if default_a in all_champion_names else 0,
-                key="choice_a"
-            )
-            
-            if choice_a == "Custom Fighter...":
-                name_a = st.text_input("Enter Name A:", value="Custom Warlord A")
-                faction_a = st.selectbox("Faction A:", [f.value for f in FactionType], key="fac_a")
-                desc_a = st.text_area("Description A:", "A specialized challenger entering the arena.")
-                champion_a = Champion(name=name_a, faction=FactionType(faction_a), description=desc_a)
-            else:
-                champion_a = next(c for c in DEFAULT_CHAMPIONS if c.name == choice_a)
-                
-        with col2:
-            st.markdown("**Combatant B**")
-            choice_b = st.selectbox(
-                "Select Champion B:", 
-                all_champion_names, 
-                index=all_champion_names.index(default_b) if default_b in all_champion_names else 0,
-                key="choice_b"
-            )
-            
-            if choice_b == "Custom Fighter...":
-                name_b = st.text_input("Enter Name B:", value="Custom Warlord B")
-                faction_b = st.selectbox("Faction B:", [f.value for f in FactionType], key="fac_b")
-                desc_b = st.text_area("Description B:", "A specialized challenger entering the arena.")
-                champion_b = Champion(name=name_b, faction=FactionType(faction_b), description=desc_b)
-            else:
-                champion_b = next(c for c in DEFAULT_CHAMPIONS if c.name == choice_b)
-
-        # 3. Battlefield Selection
+        # 2. Battlefield Selection — always independent of fighter mode. Suggests
+        # the grudge match's usual terrain as a starting point, but you're always
+        # free to override it either way.
         st.markdown("### Select the battlefield")
         field_names = [b.name for b in BATTLEFIELDS]
         field_choice = st.selectbox(

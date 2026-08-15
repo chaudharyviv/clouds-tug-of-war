@@ -19,6 +19,7 @@ class BattleResult(BaseModel):
     margin: float = Field(..., description="Final score differential")
     second_wind_triggered: bool = Field(False, description="Whether Second Wind was activated by the losing side")
     second_wind_fact: Optional[str] = Field(None, description="The research fact used for the Second Wind comeback")
+    second_wind_reason: Optional[str] = Field(None, description="Why this capability matters on this battlefield")
     second_wind_impact: Optional[float] = Field(None, description="The score adjustment from Second Wind")
     decisive_blows: List[str] = Field(..., description="Key dimensions or events that decided the outcome")
     scorecards: Dict[str, DimensionScorecard] = Field(..., description="Detailed score breakdowns per combatant")

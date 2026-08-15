@@ -1,0 +1,299 @@
+/* ============================================================
+   CLOUD BLOODBATH — Folklore x Thug-of-War x Cloud Carnage
+   Palette & type system lifted from cloud_bloodbath_mockup.html
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-void: #0b0906;
+    --bg-arena: #151009;
+    --bg-panel: #1c1610;
+    --ember: #d9a441;
+    --ember-dim: #8a6a2a;
+    --blood: #c1272d;
+    --blood-dim: #5c1215;
+    --bone: #eee4cf;
+    --bone-dim: #a89a80;
+    --line: #3a2f20;
+}
+
+/* Global application background & type */
+.stApp {
+    background:
+        radial-gradient(ellipse at 50% -10%, rgba(217, 164, 65, 0.10), transparent 55%),
+        radial-gradient(ellipse at 50% 110%, rgba(193, 39, 45, 0.08), transparent 55%),
+        var(--bg-void);
+    color: var(--bone);
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+[data-testid="stSidebar"] {
+    background: var(--bg-arena);
+    border-right: 1px solid var(--line);
+}
+
+h1, h2, h3, h4 { color: var(--bone); }
+
+/* ---------- Battlefield banner ---------- */
+.battlefield-banner {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.battlefield-banner .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ember-dim);
+}
+.battlefield-banner .name {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--ember);
+    margin-top: 6px;
+    text-shadow: 0 0 18px rgba(217, 164, 65, 0.35);
+}
+.battlefield-banner .terrain {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--bone-dim);
+    margin-top: 10px;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.battlefield-banner .rule {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+    margin: 14px auto 0;
+}
+
+/* ---------- VS row ---------- */
+.vs-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 1fr;
+    gap: 0;
+    align-items: stretch;
+    margin-bottom: 22px;
+}
+.fighter {
+    background: linear-gradient(180deg, var(--bg-panel), var(--bg-arena));
+    border: 1px solid var(--line);
+    padding: 26px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.3s ease, filter 0.3s ease, border-color 0.3s ease;
+}
+.fighter.left { border-right: none; clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%); }
+.fighter.right { border-left: none; clip-path: polygon(6% 0, 100% 0, 100% 100%, 0 100%); text-align: right; }
+.fighter::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(193, 39, 45, 0.10), transparent 60%);
+    pointer-events: none;
+}
+.fighter.right::before { background: radial-gradient(circle at 70% 20%, rgba(217, 164, 65, 0.10), transparent 60%); }
+
+.fighter.victor { border-color: var(--ember) !important; box-shadow: 0 0 30px rgba(217, 164, 65, 0.18); }
+.fighter.defeated { opacity: 0.45; filter: grayscale(75%); }
+
+.faction-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blood);
+}
+.fighter.right .faction-tag { color: var(--ember); }
+
+.epithet {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--bone-dim);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.champ-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.1;
+    margin-top: 10px;
+    color: var(--bone);
+}
+
+.stat-block {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.fighter.right .stat-block { align-items: flex-end; }
+.stat-row { width: 100%; }
+.fighter.right .stat-row { display: flex; flex-direction: column; align-items: flex-end; }
+.stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--bone-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+.bar-track {
+    height: 6px;
+    width: 100%;
+    background: #000;
+    border: 1px solid var(--line);
+}
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--blood-dim), var(--blood)); }
+.fighter.right .bar-fill { background: linear-gradient(270deg, var(--ember-dim), var(--ember)); float: right; }
+
+.vs-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(180deg, var(--bg-panel), var(--bg-arena));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+.vs-mark {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 900;
+    font-size: 30px;
+    color: var(--bone);
+    text-shadow: 0 0 24px rgba(193, 39, 45, 0.55), 0 0 4px rgba(217, 164, 65, 0.6);
+    z-index: 2;
+}
+.vs-crack {
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--ember), var(--blood), var(--ember), transparent);
+    transform: translateX(-50%);
+    opacity: 0.7;
+}
+
+/* ---------- Prophecy ---------- */
+.prophecy {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--bone-dim);
+    max-width: 560px;
+    margin: 0 auto 22px;
+}
+.prophecy strong { color: var(--bone); font-style: normal; }
+
+/* ---------- Verdict strip (always visible, always literal) ---------- */
+.verdict-strip {
+    background: var(--bg-panel);
+    border: 1px solid var(--blood);
+    border-left: 4px solid var(--blood);
+    padding: 18px 22px;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+    margin: 22px 0;
+}
+
+/* ---------- Second wind ---------- */
+.second-wind-banner {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--ember);
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-style: italic;
+    color: var(--bone-dim);
+}
+.second-wind-banner strong { color: var(--ember); font-style: normal; }
+
+/* ---------- Dimension scorecard ---------- */
+.scorecard {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    padding: 22px 24px;
+}
+.scorecard-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ember-dim);
+    margin-bottom: 16px;
+}
+.dim-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 90px;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+}
+.dim-val { color: var(--bone-dim); }
+.dim-val.win { color: var(--ember); font-weight: 500; }
+.dim-val.right-val { text-align: right; }
+.dim-name {
+    text-align: center;
+    color: var(--bone-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    margin-bottom: 14px;
+}
+.tug-track { height: 4px; background: var(--blood-dim); position: relative; width: 100%; }
+.tug-fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--ember); }
+
+/* ---------- Saga / chronicle ---------- */
+.saga-box {
+    font-family: 'Cinzel', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--bone);
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    padding: 24px;
+}
+
+/* ---------- Footer note ---------- */
+.skeleton-note {
+    margin-top: 18px;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--bone-dim);
+    letter-spacing: 0.04em;
+}
+
+/* ---------- Widget theming ---------- */
+div[data-testid="stProgress"] div[role="progressbar"] > div {
+    background-color: var(--ember) !important;
+}
+div[data-testid="stProgress"] div[role="progressbar"] {
+    background-color: #000 !important;
+    border: 1px solid var(--line) !important;
+}
+.stButton > button {
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--bg-panel);
+    color: var(--bone);
+    border: 1px solid var(--blood);
+}
+.stButton > button:hover {
+    border-color: var(--ember);
+    color: var(--ember);
+}

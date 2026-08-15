@@ -48,8 +48,13 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("### Engine status")
+
+    # Get primary model from config for display
+    primary_model = os.getenv("PRIMARY_MODEL", "openai/gpt-4o")
+    model_display = primary_model.replace("openai/", "OpenAI ").replace("anthropic/", "Anthropic ")
+
     st.markdown(
-        f"**Model:** OpenAI GPT-4o<br/>"
+        f"**Model:** {model_display}<br/>"
         f"**Search Broker:** Tavily API<br/>"
         f"**Fidelity Law:** Active",
         unsafe_allow_html=True

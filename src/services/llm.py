@@ -9,45 +9,109 @@ load_dotenv()
 T = TypeVar('T', bound=BaseModel)
 
 class LLMService:
-    _client = None
+    _openai_client = None
+    _anthropic_client = None
+    _primary_model = None
+    _fallback_model = None
+    _max_tokens = None
 
     @classmethod
-    def _get_client(cls):
-        """Returns a cached OpenAI client instance, creating one if needed."""
-        if cls._client is None:
+    def _init_config(cls):
+        """Initialize LLM configuration from environment variables."""
+        if cls._primary_model is None:
+            cls._primary_model = os.getenv("PRIMARY_MODEL", "openai/gpt-4o")
+            cls._fallback_model = os.getenv("FALLBACK_MODEL", "anthropic/claude-haiku-4-5")
+            cls._max_tokens = int(os.getenv("MAX_TOKENS", "4000"))
+
+    @classmethod
+    def _get_openai_client(cls):
+        """Returns a cached OpenAI client instance."""
+        if cls._openai_client is None:
             openai_key = os.getenv("OPENAI_API_KEY")
-            if openai_key and openai_key != "sk-...":
+            if openai_key and openai_key not in ("sk-...", ""):
                 from openai import OpenAI
-                cls._client = OpenAI(api_key=openai_key)
-        return cls._client
+                cls._openai_client = OpenAI(api_key=openai_key)
+        return cls._openai_client
+
+    @classmethod
+    def _get_anthropic_client(cls):
+        """Returns a cached Anthropic client instance."""
+        if cls._anthropic_client is None:
+            anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+            if anthropic_key and anthropic_key not in ("sk-ant-...", ""):
+                from anthropic import Anthropic
+                cls._anthropic_client = Anthropic(api_key=anthropic_key)
+        return cls._anthropic_client
+
+    @classmethod
+    def _get_model_provider(cls, model: str) -> str:
+        """Extract provider from model string (e.g., 'openai/gpt-4o' -> 'openai')."""
+        return model.split("/")[0] if "/" in model else "openai"
+
+    @classmethod
+    def _get_model_name(cls, model: str) -> str:
+        """Extract model name from model string (e.g., 'openai/gpt-4o' -> 'gpt-4o')."""
+        return model.split("/")[1] if "/" in model else model
 
     @staticmethod
-    def query(prompt: str, system_prompt: str = "", temperature: float = 0.2) -> str:
+    def query(prompt: str, system_prompt: str = "", temperature: float = 0.2, use_fallback: bool = False) -> str:
         """
-        Sends a query to the selected LLM provider.
-        Supports OpenAI, with a mock fallback for testing.
+        Sends a query to the selected LLM provider (primary or fallback).
+        Supports OpenAI and Anthropic with automatic failover.
         """
-        client = LLMService._get_client()
+        LLMService._init_config()
 
-        if client:
-            try:
-                messages = []
-                if system_prompt:
-                    messages.append({"role": "system", "content": system_prompt})
-                messages.append({"role": "user", "content": prompt})
+        model_to_use = LLMService._fallback_model if use_fallback else LLMService._primary_model
+        provider = LLMService._get_model_provider(model_to_use)
+        model_name = LLMService._get_model_name(model_to_use)
 
-                response = client.chat.completions.create(
-                    model="gpt-4o",
-                    messages=messages,
-                    temperature=temperature,
-                    max_tokens=4000
-                )
-                return response.choices[0].message.content
-            except Exception as e:
-                print(f"Error calling OpenAI: {e}")
+        try:
+            if provider == "openai":
+                return LLMService._query_openai(prompt, system_prompt, temperature, model_name)
+            elif provider == "anthropic":
+                return LLMService._query_anthropic(prompt, system_prompt, temperature, model_name)
+        except Exception as e:
+            print(f"Error calling {provider}: {e}")
+            if not use_fallback:
+                return LLMService.query(prompt, system_prompt, temperature, use_fallback=True)
 
-        # Mock fallback for demonstration / offline use
         return f"MOCK LLM RESPONSE FOR PROMPT: {prompt[:100]}..."
+
+    @staticmethod
+    def _query_openai(prompt: str, system_prompt: str, temperature: float, model: str) -> str:
+        """Query OpenAI API."""
+        client = LLMService._get_openai_client()
+        if not client:
+            raise ValueError("OpenAI client not initialized")
+
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=LLMService._max_tokens
+        )
+        return response.choices[0].message.content
+
+    @staticmethod
+    def _query_anthropic(prompt: str, system_prompt: str, temperature: float, model: str) -> str:
+        """Query Anthropic API."""
+        client = LLMService._get_anthropic_client()
+        if not client:
+            raise ValueError("Anthropic client not initialized")
+
+        response = client.messages.create(
+            model=model,
+            max_tokens=LLMService._max_tokens,
+            system=system_prompt if system_prompt else None,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature
+        )
+        return response.content[0].text
 
     @staticmethod
     def _clean_json_text(text: str) -> str:
@@ -111,3 +175,4 @@ class LLMService:
             f"Failed to parse LLM response into schema {response_model.__name__} after "
             f"{max_attempts} attempt(s). Raw text: {last_raw}. Error: {last_error}"
         )
+

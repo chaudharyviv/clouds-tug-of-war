@@ -202,19 +202,38 @@ h1, h2, h3, h4 { color: var(--bone); }
 .prophecy strong { color: var(--cyan); font-style: normal; }
 
 /* ---------- Verdict strip (always visible, always literal) ---------- */
+/* The loudest, most permanent element on the results page on purpose —
+   sticks to the top of the viewport so it survives scrolling past the
+   myth below it. top offset clears Streamlit's own toolbar. */
 .verdict-strip {
-    background: var(--bg-panel);
-    border: 1px solid var(--ember);
-    border-left: 4px solid var(--ember);
-    padding: 18px 22px;
+    position: sticky;
+    top: 3.5rem;
+    z-index: 999;
+    background: rgba(16, 8, 44, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid var(--ember);
+    border-left: 6px solid var(--ember);
+    padding: 18px 24px;
     text-align: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 1.05rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--bone);
     margin: 22px 0;
-    box-shadow: 0 0 24px rgba(176, 38, 255, 0.2);
+    box-shadow: 0 0 34px rgba(176, 38, 255, 0.4), 0 6px 20px rgba(0, 0, 0, 0.55);
+}
+.verdict-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 6px;
+}
+.verdict-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--bone);
 }
 
 /* ---------- Second wind ---------- */

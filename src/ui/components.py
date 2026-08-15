@@ -133,9 +133,17 @@ def render_prophecy(champion_a: Champion, champion_b: Champion):
 def render_verdict_strip(verdict_text: str):
     """
     Renders the non-negotiable, plain-language verdict — the myth never
-    replaces this. Always visible, always literal.
+    replaces this. Sticky and oversized on purpose: this is the one element
+    that must survive a 3-second glance (spec success criterion #6), so it
+    stays pinned and legible while the reader scrolls through the theater
+    below it.
     """
-    _render_html(f'<div class="verdict-strip">{html.escape(verdict_text)}</div>')
+    _render_html(
+        '<div class="verdict-strip">'
+        '<div class="verdict-label">Verdict</div>'
+        f'<div class="verdict-text">{html.escape(verdict_text)}</div>'
+        '</div>'
+    )
 
 
 def render_scorecard(result: BattleResult, champion_a: Champion, champion_b: Champion):

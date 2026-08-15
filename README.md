@@ -36,6 +36,18 @@ The system relies on a sequence of 4 specialized agents:
 
 ---
 
+## ⚡ The Second Wind
+
+Every duel gives the losing side exactly **one** comeback beat, spent once, and it's never invented.
+
+The Fight Engine picks the loser's single strongest capability — but specifically the one most relevant to *that battlefield*, not just their flashiest stat overall — straight out of the War Scout's research notes. Click the button in the UI to spend it: the scorecard and margin update live, and a strike banner explains what happened, in-fiction. It narrows the gap or lands a symbolic blow; the Fidelity Law still decides whether it changes the final verdict.
+
+## 🎯 The Verdict
+
+The saga can get as unhinged as it wants — the verdict strip never does. It's the loudest, most permanent element on the results page: pinned to the top of the screen as you scroll, stated in plain language before any flourish, so the outcome is legible in under 3 seconds even to someone who's never touched a cloud console.
+
+---
+
 ## 🛠️ Tech Stack
 - **Language**: Python
 - **LLM Engine**: OpenAI (GPT-4o)

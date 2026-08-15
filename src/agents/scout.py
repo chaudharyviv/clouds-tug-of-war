@@ -31,12 +31,23 @@ class WarScout(BaseAgent):
                 source_links.append(res['url'])
                 
         compiled_data = "\n".join(search_results)
-        
+
         prompt = (
             f"Extract capabilities, limitations, and pricing signals for the combatant: {combatant_name}\n"
-            f"Use the following search results to ground your findings:\n\n"
+            f"Use ONLY the following search results to ground your findings — do not use outside knowledge "
+            f"or invent facts not present here:\n\n"
             f"{compiled_data}\n\n"
-            f"Formulate a precise research profile for the combatant. Do not invent any facts."
+            f"Requirements for the research profile:\n"
+            f"- 'capabilities': 3 to 5 entries. Each MUST cite a concrete, specific detail from the search "
+            f"results above (a number, a named technology, a named region count, a specific feature) — not "
+            f"vague marketing language like 'industry-leading' or 'highly scalable' with no backing detail.\n"
+            f"- 'limitations': 2 to 4 entries. Each MUST be a concrete weakness, gap, or drawback stated or "
+            f"clearly implied in the search results — not a hedge like 'may have some limitations.'\n"
+            f"- 'pricing_signal': one sentence stating the actual pricing model or cost characteristic found "
+            f"in the search results (e.g. usage-based, egress fees, direct/cheaper pricing) — not a vague "
+            f"claim like 'competitive pricing' with no mechanism named.\n"
+            f"- If the search results genuinely don't contain enough detail for the minimum counts above, "
+            f"include fewer entries rather than padding with invented or generic claims."
         )
         
         # Query structured output matching ResearchNotes Pydantic schema

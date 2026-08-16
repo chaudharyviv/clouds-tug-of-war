@@ -28,7 +28,6 @@ share/python-wheels/
 *.egg
 
 # Streamlit
-.streamlit/
 .streamlit/secrets.toml
 
 # IDE / OS

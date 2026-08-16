@@ -68,7 +68,7 @@ class ArenaViews:
             st.markdown(
                 "<span style='color: var(--blood); font-family: \"IBM Plex Mono\", monospace; "
                 "font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;'>"
-                "Revisit a feud already written into legend:</span>",
+                "Revisit a feud already written into legends:</span>",
                 unsafe_allow_html=True
             )
             selected_grudge_idx = st.selectbox(
@@ -90,7 +90,7 @@ class ArenaViews:
                 st.markdown(
                     "<span style='color: var(--ember); font-family: \"IBM Plex Mono\", monospace; "
                     "font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;'>"
-                    "Summon your first champion:</span>",
+                    "Summon The Fisrt Champion:</span>",
                     unsafe_allow_html=True
                 )
                 choice_a = st.selectbox(
@@ -112,7 +112,7 @@ class ArenaViews:
                 st.markdown(
                     "<span style='color: var(--cyan); font-family: \"IBM Plex Mono\", monospace; "
                     "font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;'>"
-                    "Summon their rival:</span>",
+                    "Summon the Worthy Rival:</span>",
                     unsafe_allow_html=True
                 )
                 choice_b = st.selectbox(

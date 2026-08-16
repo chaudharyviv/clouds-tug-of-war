@@ -29,7 +29,7 @@ The cloud is not a market. It is a collection of warring realms:
 
 ```
 clouds-tug-of-war/
-├── app.py                      # Streamlit entry point
+├── app.py                      # Streamlit entry point & app bootstrapping
 ├── src/
 │   ├── agents/                 # Multi-agent pipeline
 │   │   ├── base.py             # BaseAgent with LLM integration
@@ -47,14 +47,14 @@ clouds-tug-of-war/
 │   │   ├── llm.py              # LLMService for OpenAI/GPT-4o
 │   │   ├── search.py           # Tavily search integration
 │   │   ├── orchestrator.py     # ArenaOrchestrator - 4-agent pipeline
-│   │   ├── codex.py            # Persistent battle history
+│   │   ├── codex.py            # Persistent battle history (JSON)
 │   │   └── __init__.py
 │   ├── ui/                     # Streamlit views & components
-│   │   ├── views.py            # ArenaViews - main view routing
-│   │   ├── components.py       # Reusable UI components
+│   │   ├── views.py            # ArenaViews - view routing & business logic
+│   │   ├── components.py       # Reusable render functions
 │   │   └── __init__.py
 │   └── static/
-│       └── style.css           # Gaming-inspired custom CSS
+│       └── style.css           # Neural War Neon cyberpunk theme
 ├── design/
 │   └── v3_fight_engine_design.md
 ├── .env                        # API keys (not committed)
@@ -94,8 +94,7 @@ The system relies on a sequence of 4 specialized agents, each inheriting from `B
 
 ### 3. Fight Engine (`src/agents/engine.py`)
 - **Temperature**: 0.15 (hyper-logical, objective)
-- Scores combatants across 10 architectural dimensions:
-  - Compute & Infrastructure, Storage & Databases, Networking, Security, Pricing, etc.
+- Scores combatants across 10 architectural dimensions
 - Applies battlefield-specific weights to dimensions
 - Calculates **Tactical Advantage** bonus (+15 max) based on battlefield rules
 - Determines winner via weighted aggregate scoring
@@ -192,17 +191,121 @@ Second Wind activation recalculates scores and rewrites the chronicle with comeb
 
 ---
 
-## 🎮 UI Layer (`src/ui/`)
+## 🎮 UI Layer
+
+### app.py (Entry Point)
+
+The main Streamlit application handles:
+
+**Page Configuration**
+```python
+st.set_page_config(
+    page_title="Cloud Bloodbath - Multi-Agent Tug-of-War",
+    page_icon="⚔️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+```
+
+**Password Protection (`APP_PASSWORD`)**
+- Optional gate behind a single shared password
+- Set `APP_PASSWORD` in `.env` to enable
+- Uses `hmac.compare_digest()` for secure comparison
+- Without `APP_PASSWORD`, gates stay open for local development
+
+**Session States**
+- `battle_state`: "setup" → "fighting"
+- `app_tab`: "Arena" ↔ "Codex History"
+- `ritual_executed`: Tracks if battle has been computed
+- Caches `champion_a`, `champion_b`, `battlefield`, `notes_a`, `notes_b`, `battle_result`, `battle_chronicle`
+
+**Sidebar**
+- Navigation radio: "Arena" | "Codex History"
+- Displays: Oracle model, Tavily API status, Fidelity Law status
+
+---
 
 ### views.py (ArenaViews)
-- `render_setup_view()` — Champion and battlefield selection
-- `render_fight_view()` — Live battle progress and results
-- `render_codex_view()` — Historical battle archive
 
-### components.py
-- Reusable Streamlit components for the arena interface
+Main view controller with three rendering methods:
 
-Custom CSS (`src/static/style.css`) provides the gaming/fantasy aesthetic with ember glows and metallic textures.
+#### `render_setup_view()`
+- **Fighter Selection Mode** (segmented control):
+  - "Ancient Grudge" — Preset rivalries (GPU Rebellion, Edge Skirmish, Sovereignty Clash, Cost Bleedout)
+  - "Choose Your Champions" — Custom selection from `DEFAULT_CHAMPIONS` or forge new
+- **Champion columns** — Left (ember color) vs Right (cyan color)
+- **Custom challenger forge** — Name, faction, description
+- **Battlefield selection** — Dropdown with terrain rules display
+- **"Stage the slaughter"** button triggers the ritual
+
+#### `render_fight_view()`
+1. `render_battlefield_banner()` — Terrain header with rewards/suffers
+2. `render_vs_row()` — Fighter cards with diagonal cuts, victor/defeated states
+3. `render_weapons_and_flaws()` — Weapon list (cyan) & curses (blood)
+4. `render_prophecy()` — Flavor text
+5. `render_verdict_strip()` — **Sticky** plain-language verdict
+6. `render_score_totals()` — Power balance numbers
+7. **Second Wind** — Button for loser comeback, recalculates scores
+8. `render_scorecard()` — Dimension tug-of-war bars
+9. `render_tactical_advantage()` — Battlefield-relevant capabilities
+10. `render_decisive_blows()` — Key technical reasons
+11. `render saga_box()` — Full bardic chronicle
+12. **Fidelity Law expander** — Inspectable raw research notes
+13. **Save to Codex** button — Persists battle to JSON
+14. **Stage another fight** — Reset flow
+
+#### `render_codex_view()`
+- **Hall of Fame** — Win leaderboard with per-battlefield breakdown
+- **Graveyard** — List of fallen champions
+- **Archive Halls** — Expandable cards with full battle details
+- **"Burn the archives"** — Clear all history
+
+---
+
+### components.py (Render Functions)
+
+Helper functions for UI rendering:
+
+| Function | Purpose |
+|----------|---------|
+| `render_battlefield_banner()` | Terrain header with pulsing name glow |
+| `render_vs_row()` | Fighter cards with diagonal clip-path, VS mark, dynamic victor/defeated styling |
+| `render_weapons_and_flaws()` | Side-by-side weapon (cyan) and curse (blood) lists |
+| `render_prophecy()` | Flavor prophecy line above verdict |
+| `render_verdict_strip()` | Sticky, high-contrast verdict bar |
+| `render_score_totals()` | Power balance scores under verdict |
+| `render_scorecard()` | 10-dimension tug-of-war with weighted scores |
+| `render_tactical_advantage()` | Battlefield-relevant capabilities with bonuses |
+| `render_decisive_blows()` | Battle log styled decisive factors |
+
+**Internal helpers:**
+- `_render_html()` — Flattens HTML fragments to prevent Streamlit code-block parsing
+- `_stat_rows()` — Extracts dimension scores for fighter stat blocks
+
+---
+
+### style.css (Neural War Neon Theme)
+
+Cyberpunk color palette:
+- `--bg-void`: #050318 (near-black void)
+- `--ember`: #b026ff (electric violet)
+- `--blood`: #ff2d95 (neon magenta)
+- `--cyan`: #00eaff (electric cyan)
+- `--bone`: #eef0ff (near-white)
+
+**Key animations:**
+- `battle-glow-pulse` — Victor glow effect
+- `victor-crown-glow` — Winner text shimmer
+- `battlefield-name-pulse` — Battlefield name pulse
+- `screen-shake-impact` — VS row impact shake
+- `second-wind-pulse` — Comeback banner animation
+
+**Visual elements:**
+- Diagonal fighter card edges with clip-path
+- Gradient divider lines between sections
+- Sticky verdict strip (top: 3.5rem)
+- Weapon lists (cyan) vs Curses (blood)
+- Tug-of-war dimension bars with dynamic fill
 
 ---
 
@@ -221,9 +324,9 @@ Every duel gives the losing side exactly **one** comeback beat.
 ## 🎯 The Verdict
 
 The saga can get as unhinged as the Chronicler wants — the verdict strip never does. It's:
-- Loud, permanent, pinned to top of results page
-- Plain language, 3-second legibility
-- Format: "WINNER_NAME holds the field · LOSER_NAME falls (reason)"
+- **Sticky** — Survives scrolling, pinned at top
+- **Loud** — Pinned verdict strip with ember border glow
+- **Plain** — 3-second legibility: "WINNER_NAME holds the field · LOSER_NAME falls (reason)"
 
 ---
 
@@ -232,7 +335,7 @@ The saga can get as unhinged as the Chronicler wants — the verdict strip never
 The Myth Weaver may be extreme. The Blood Chronicler may be unhinged.  
 Neither may invent capabilities that do not exist or erase well-known limitations.  
 The War Scout's research notes remain the source of truth.  
-The underlying technical logic (Dimension Scorecard) is always inspectable.
+The underlying technical logic (Dimension Scorecard) is always inspectable via the "Peer behind the myth" expander.
 
 ---
 
@@ -241,11 +344,13 @@ The underlying technical logic (Dimension Scorecard) is always inspectable.
 | Layer | Technology |
 |-------|------------|
 | Language | Python 3.10+ |
-| LLM Engine | OpenAI (GPT-4o) via `src/services/llm.py` |
+| LLM Engine | OpenAI (GPT-4o / GPT-4o-mini) via `src/services/llm.py` |
 | Research | Tavily Search API via `src/services/search.py` |
 | Data Schemas | Pydantic v2 |
-| UI | Streamlit + custom CSS |
-| Persistence | Codex history via `src/services/codex.py` |
+| UI Framework | Streamlit + custom CSS |
+| Theme | Neural War Neon (CSS variables, animations) |
+| Persistence | JSON file via `src/services/codex.py` |
+| Auth | Optional password gate via `APP_PASSWORD` env var |
 
 ---
 
@@ -288,9 +393,10 @@ Open the local Streamlit URL, select champions and battlefield, let the War Coun
 
 Environment variables in `.env`:
 
-| Variable | Description |
-|----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key |
-| `TAVILY_API_KEY` | Tavily Search API key |
-| `PRIMARY_MODEL` | Optional: override default model (e.g., `anthropic/claude-3-5-sonnet`) |
-| `CODEX_PATH` | Optional: path to battle history database |
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OPENAI_API_KEY` | OpenAI API key | — |
+| `TAVILY_API_KEY` | Tavily Search API key | — |
+| `PRIMARY_MODEL` | Override LLM model | `openai/gpt-4o` |
+| `CODEX_PATH` | Battle history file | `codex_history.json` |
+| `APP_PASSWORD` | Optional password gate | (none — open) |

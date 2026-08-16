@@ -29,6 +29,7 @@ share/python-wheels/
 
 # Streamlit
 .streamlit/secrets.toml
+.claude
 
 # IDE / OS
 .vscode/

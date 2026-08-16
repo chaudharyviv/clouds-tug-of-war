@@ -17,11 +17,11 @@ Users throw empires and upstarts into the arena. The system researches their rea
 
 The cloud is not a market. It is a collection of warring realms:
 
-- **Hyperscalers (AWS, Azure, GCP)** — The three ancient God-Empires. Infinite scale, deep magic, gravitational lock-in, and crushing tribute.
-- **NeoClouds (CoreWeave, Lambda)** — The new AI warbands. Lean, specialized, hungry, born for GPU bloodsport.
-- **Sovereign / Regional Clouds (OVHcloud)** — Border kingdoms obsessed with data walls and national shields.
-- **Distributed / Edge Tribes (Cloudflare, Vercel)** — Guerrilla fighters living at the fringes. Fast locally, fragile in open war.
-- **Private / On-Prem Empires** — The old fortress kingdoms still trying to hold their walls.
+- **Hyperscalers (AWS, Azure, GCP)** - The three ancient God-Empires. Infinite scale, deep magic, gravitational lock-in, and crushing tribute.
+- **NeoClouds (CoreWeave, Lambda)** - The new AI warbands. Lean, specialized, hungry, born for GPU bloodsport.
+- **Sovereign / Regional Clouds (OVHcloud)** - Border kingdoms obsessed with data walls and national shields.
+- **Distributed / Edge Tribes (Cloudflare, Vercel)** - Guerrilla fighters living at the fringes. Fast locally, fragile in open war.
+- **Private / On-Prem Empires** - The old fortress kingdoms still trying to hold their walls.
 
 ---
 
@@ -231,34 +231,34 @@ Main view controller with three rendering methods:
 
 #### `render_setup_view()`
 - **Fighter Selection Mode** (segmented control):
-  - "Ancient Grudge" — Preset rivalries (GPU Rebellion, Edge Skirmish, Sovereignty Clash, Cost Bleedout)
-  - "Choose Your Champions" — Custom selection from `DEFAULT_CHAMPIONS` or forge new
-- **Champion columns** — Left (ember color) vs Right (cyan color)
-- **Custom challenger forge** — Name, faction, description
-- **Battlefield selection** — Dropdown with terrain rules display
+  - "Ancient Grudge" - Preset rivalries (GPU Rebellion, Edge Skirmish, Sovereignty Clash, Cost Bleedout)
+  - "Choose Your Champions" - Custom selection from `DEFAULT_CHAMPIONS` or forge new
+- **Champion columns** - Left (ember color) vs Right (cyan color)
+- **Custom challenger forge** - Name, faction, description
+- **Battlefield selection** - Dropdown with terrain rules display
 - **"Stage the slaughter"** button triggers the ritual
 
 #### `render_fight_view()`
-1. `render_battlefield_banner()` — Terrain header with rewards/suffers
-2. `render_vs_row()` — Fighter cards with diagonal cuts, victor/defeated states
-3. `render_weapons_and_flaws()` — Weapon list (cyan) & curses (blood)
-4. `render_prophecy()` — Flavor text
-5. `render_verdict_strip()` — **Sticky** plain-language verdict
-6. `render_score_totals()` — Power balance numbers
-7. **Second Wind** — Button for loser comeback, recalculates scores
-8. `render_scorecard()` — Dimension tug-of-war bars
-9. `render_tactical_advantage()` — Battlefield-relevant capabilities
-10. `render_decisive_blows()` — Key technical reasons
-11. `render saga_box()` — Full bardic chronicle
-12. **Fidelity Law expander** — Inspectable raw research notes
-13. **Save to Codex** button — Persists battle to JSON
-14. **Stage another fight** — Reset flow
+1. `render_battlefield_banner()` - Terrain header with rewards/suffers
+2. `render_vs_row()` - Fighter cards with diagonal cuts, victor/defeated states
+3. `render_weapons_and_flaws()` - Weapon list (cyan) & curses (blood)
+4. `render_prophecy()` - Flavor text
+5. `render_verdict_strip()` - **Sticky** plain-language verdict
+6. `render_score_totals()` - Power balance numbers
+7. **Second Wind** - Button for loser comeback, recalculates scores
+8. `render_scorecard()` - Dimension tug-of-war bars
+9. `render_tactical_advantage()` - Battlefield-relevant capabilities
+10. `render_decisive_blows()` - Key technical reasons
+11. `render saga_box()` - Full bardic chronicle
+12. **Fidelity Law expander** - Inspectable raw research notes
+13. **Save to Codex** button - Persists battle to JSON
+14. **Stage another fight** - Reset flow
 
 #### `render_codex_view()`
-- **Hall of Fame** — Win leaderboard with per-battlefield breakdown
-- **Graveyard** — List of fallen champions
-- **Archive Halls** — Expandable cards with full battle details
-- **"Burn the archives"** — Clear all history
+- **Hall of Fame** - Win leaderboard with per-battlefield breakdown
+- **Graveyard** - List of fallen champions
+- **Archive Halls** - Expandable cards with full battle details
+- **"Burn the archives"** - Clear all history
 
 ---
 
@@ -279,8 +279,8 @@ Helper functions for UI rendering:
 | `render_decisive_blows()` | Battle log styled decisive factors |
 
 **Internal helpers:**
-- `_render_html()` — Flattens HTML fragments to prevent Streamlit code-block parsing
-- `_stat_rows()` — Extracts dimension scores for fighter stat blocks
+- `_render_html()` - Flattens HTML fragments to prevent Streamlit code-block parsing
+- `_stat_rows()` - Extracts dimension scores for fighter stat blocks
 
 ---
 
@@ -294,11 +294,11 @@ Cyberpunk color palette:
 - `--bone`: #eef0ff (near-white)
 
 **Key animations:**
-- `battle-glow-pulse` — Victor glow effect
-- `victor-crown-glow` — Winner text shimmer
-- `battlefield-name-pulse` — Battlefield name pulse
-- `screen-shake-impact` — VS row impact shake
-- `second-wind-pulse` — Comeback banner animation
+- `battle-glow-pulse` - Victor glow effect
+- `victor-crown-glow` - Winner text shimmer
+- `battlefield-name-pulse` - Battlefield name pulse
+- `screen-shake-impact` - VS row impact shake
+- `second-wind-pulse` - Comeback banner animation
 
 **Visual elements:**
 - Diagonal fighter card edges with clip-path
@@ -323,10 +323,10 @@ Every duel gives the losing side exactly **one** comeback beat.
 
 ## 🎯 The Verdict
 
-The saga can get as unhinged as the Chronicler wants — the verdict strip never does. It's:
-- **Sticky** — Survives scrolling, pinned at top
-- **Loud** — Pinned verdict strip with ember border glow
-- **Plain** — 3-second legibility: "WINNER_NAME holds the field · LOSER_NAME falls (reason)"
+The saga can get as unhinged as the Chronicler wants - the verdict strip never does. It's:
+- **Sticky** - Survives scrolling, pinned at top
+- **Loud** - Pinned verdict strip with ember border glow
+- **Plain** - 3-second legibility: "WINNER_NAME holds the field · LOSER_NAME falls (reason)"
 
 ---
 
@@ -395,8 +395,8 @@ Environment variables in `.env`:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `OPENAI_API_KEY` | OpenAI API key | — |
-| `TAVILY_API_KEY` | Tavily Search API key | — |
+| `OPENAI_API_KEY` | OpenAI API key | - |
+| `TAVILY_API_KEY` | Tavily Search API key | - |
 | `PRIMARY_MODEL` | Override LLM model | `openai/gpt-4o` |
 | `CODEX_PATH` | Battle history file | `codex_history.json` |
-| `APP_PASSWORD` | Optional password gate | (none — open) |
+| `APP_PASSWORD` | Optional password gate | (none - open) |

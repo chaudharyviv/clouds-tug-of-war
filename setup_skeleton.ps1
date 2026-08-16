@@ -38,7 +38,7 @@ $files = @(
     "src/ui/views.py"
 )
 
-Write-Host "Starting Cloud Bloodbath workspace scaffolding..." -ForegroundColor Cyan
+Write-Host "Starting Cloud Bloodbath workspace scaffolding..." 
 
 # 3. Create Directories
 foreach ($dir in $directories) {

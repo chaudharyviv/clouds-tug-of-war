@@ -13,7 +13,6 @@ STAT_BLOCK_DIMENSIONS = [
     "Raw Scale & Gravity",
 ]
 
-
 def _render_html(fragment: str):
     # Streamlit's markdown treats lines indented 4+ spaces as a code block,
     # which breaks nested <div> HTML — collapse everything to one line first.

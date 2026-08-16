@@ -26,7 +26,7 @@ local_css("src/static/style.css")
 
 # Initialize Session states
 if "battle_state" not in st.session_state:
-    st.session_state["battle_state"] = "setup" # setup, fighting
+    st.session_state["battle_state"] = "setup"
 
 if "app_tab" not in st.session_state:
     st.session_state["app_tab"] = "Arena"
@@ -61,7 +61,7 @@ with st.sidebar:
     )
     st.markdown("---")
     st.markdown(
-        "<p class='skeleton-note'>v2.2 · Bloodsport of Cloud Factions</p>",
+        "<p class='skeleton-note'> Bloodsport of Cloud Factions</p>",
         unsafe_allow_html=True
     )
 

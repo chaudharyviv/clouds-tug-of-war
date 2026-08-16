@@ -17,12 +17,18 @@ class BattleResult(BaseModel):
     winner_name: str = Field(..., description="Name of the surviving champion")
     loser_name: str = Field(..., description="Name of the defeated champion")
     margin: float = Field(..., description="Final score differential")
+    score_a: float = Field(0.0, description="Combatant A's total battle score (post-weights, post-Tactical Advantage)")
+    score_b: float = Field(0.0, description="Combatant B's total battle score (post-weights, post-Tactical Advantage)")
     second_wind_triggered: bool = Field(False, description="Whether Second Wind was activated by the losing side")
     second_wind_fact: Optional[str] = Field(None, description="The research fact used for the Second Wind comeback")
     second_wind_reason: Optional[str] = Field(None, description="Why this capability matters on this battlefield")
     second_wind_impact: Optional[float] = Field(None, description="The score adjustment from Second Wind")
     decisive_blows: List[str] = Field(..., description="Key dimensions or events that decided the outcome")
     scorecards: Dict[str, DimensionScorecard] = Field(..., description="Detailed score breakdowns per combatant")
+    tactical_capability_a: Optional[str] = Field(None, description="Combatant A's capability that matched the battlefield's tactical rule")
+    tactical_bonus_a: float = Field(0.0, description="Points Combatant A gained from Tactical Advantage")
+    tactical_capability_b: Optional[str] = Field(None, description="Combatant B's capability that matched the battlefield's tactical rule")
+    tactical_bonus_b: float = Field(0.0, description="Points Combatant B gained from Tactical Advantage")
 
 class Chronicle(BaseModel):
     verdict: str = Field(..., description="Plain-text legible verdict line (e.g., AWS holds the field · CoreWeave falls)")

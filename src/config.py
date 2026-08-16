@@ -23,65 +23,76 @@ BATTLEFIELDS: List[Battlefield] = [
         description="A volcanic plain of molten silicon and infinite matrix multiplications where only sheer GPU density and specialized AI frameworks survive.",
         rewards="GPU density, performance, specialized stacks",
         suffers="Generalist empires & pure edge",
-        dimension_weights={
-            "AI / GPU War Power": 2.5,
-            "Speed of Innovation / Specialization": 1.5,
-            "Raw Scale & Gravity": 1.0,
-            "Service Depth & Ecosystem": 1.0,
-            "Economic Blood Cost": 0.8
-        }
+        primary_dimensions={
+            "AI / GPU War Power": 3.0,
+            "Speed of Innovation / Specialization": 2.0
+        },
+        secondary_dimensions={
+            "Raw Scale & Gravity": 1.0
+        },
+        tactical_rule="Specialized GPU/accelerator infrastructure earns a Tactical Advantage.",
+        comeback_profile="high"
     ),
     Battlefield(
         name="Cost Wasteland",
         description="A barren, resource-starved desert where margins are razor-thin and every drop of compute costs blood. High markup empires wither here.",
         rewards="Aggressive unit economics, low cost-per-token/VM",
         suffers="Premium gravity wells and high lock-in ecosystems",
-        dimension_weights={
-            "Economic Blood Cost": 2.5,
+        primary_dimensions={
+            "Economic Blood Cost": 3.0
+        },
+        secondary_dimensions={
             "Operational Simplicity": 1.5,
-            "Lock-in vs Freedom": 1.5,
-            "Raw Scale & Gravity": 0.5,
-            "Service Depth & Ecosystem": 0.5
-        }
+            "Lock-in vs Freedom": 1.0
+        },
+        tactical_rule="Demonstrably lower sustainable unit economics earns a Tactical Advantage.",
+        comeback_profile="low"
     ),
     Battlefield(
         name="Lock-in Swamp",
         description="A thick, suffocating marshland of proprietary APIs, complex ingress/egress tariffs, and contract chains. Only those built for freedom can escape.",
         rewards="Exit ability, open-source compatibility, standards",
         suffers="Deep ecosystem empires with complex multi-service reliance",
-        dimension_weights={
-            "Lock-in vs Freedom": 2.5,
-            "Operational Simplicity": 1.5,
-            "Economic Blood Cost": 1.0,
-            "Service Depth & Ecosystem": 0.5,
-            "Resilience & Global Reach": 0.8
-        }
+        primary_dimensions={
+            "Lock-in vs Freedom": 3.0
+        },
+        secondary_dimensions={
+            "Economic Blood Cost": 1.5,
+            "Operational Simplicity": 1.25
+        },
+        tactical_rule="The ability to escape proprietary dependencies without architectural pain earns a Tactical Advantage.",
+        comeback_profile="medium"
     ),
     Battlefield(
         name="Sovereignty Fortress",
         description="An iron-walled citadel governed by strict national boundaries, shielding walls of compliance, and data residency laws.",
         rewards="Data residency, national control, local compliance shields",
         suffers="Global hyperscalers with centralized data routing",
-        dimension_weights={
-            "Sovereign Control & Data Residency": 2.5,
-            "Resilience & Global Reach": 1.2,
-            "Lock-in vs Freedom": 1.0,
-            "Raw Scale & Gravity": 0.5,
-            "Service Depth & Ecosystem": 0.5
-        }
+        primary_dimensions={
+            "Sovereign Control & Data Residency": 3.0
+        },
+        secondary_dimensions={
+            "Resilience & Global Reach": 1.5,
+            "Lock-in vs Freedom": 1.0
+        },
+        tactical_rule="Local control and data residency guarantees earn a Tactical Advantage.",
+        comeback_profile="medium"
     ),
     Battlefield(
         name="Edge Ambush Terrain",
         description="A fractured, chaotic skirmish ground of thousands of micro-nodes. Communication paths are thin, and millisecond latency is a lethal dagger.",
         rewards="Ultra-low local latency, localized execution, distributed robustness",
         suffers="Centralized cloud giants and heavy control-plane dependencies",
-        dimension_weights={
-            "Edge / Locality Power": 2.5,
+        primary_dimensions={
+            "Edge / Locality Power": 3.0
+        },
+        secondary_dimensions={
             "Operational Simplicity": 1.5,
-            "Speed of Innovation / Specialization": 1.2,
-            "Resilience & Global Reach": 1.0,
-            "Raw Scale & Gravity": 0.3
-        }
+            "Speed of Innovation / Specialization": 1.25,
+            "Resilience & Global Reach": 1.0
+        },
+        tactical_rule="Execution close to the user/device earns a Tactical Advantage.",
+        comeback_profile="very_high"
     )
 ]
 
@@ -128,9 +139,19 @@ DEFAULT_CHAMPIONS: List[Champion] = [
         description="The European Shield, defender of data residency and anti-Cloud Act sovereignty."
     ),
     Champion(
-        name="Sovereign Sovereign",
+        name="Scaleway",
         faction=FactionType.SOVEREIGN_REGIONAL,
-        description="A specialized national cloud fortress with absolute data isolation."
+        description="The Republic's Compute Marshal, fielding multi-cloud infrastructure entirely on EU soil, beyond the reach of US extraterritorial law."
+    ),
+    Champion(
+        name="STACKIT",
+        faction=FactionType.SOVEREIGN_REGIONAL,
+        description="The Schwarz Group's Sovereign Vault, a German-built cloud fortress forged for corporate and public-sector workloads that cannot leave home jurisdiction."
+    ),
+    Champion(
+        name="T Cloud Public",
+        faction=FactionType.SOVEREIGN_REGIONAL,
+        description="Deutsche Telekom's Compliance Warden, staffed EU-only and bound to BSI C5 certification for government and heavily regulated workloads."
     ),
     
     # Distributed / Edge
@@ -144,11 +165,21 @@ DEFAULT_CHAMPIONS: List[Champion] = [
         faction=FactionType.DISTRIBUTED_EDGE,
         description="The Frontend Phantom, weaving seamless global localizations."
     ),
+    Champion(
+        name="Akamai",
+        faction=FactionType.DISTRIBUTED_EDGE,
+        description="The Old Sentinel of the Wire, warding traffic through the Akamai Connected Cloud's globally dispersed edge and security mesh since before the others were born."
+    ),
     
     # Private / On-Prem
     Champion(
-        name="Old Fortress On-Prem",
+        name="OpenShift",
         faction=FactionType.PRIVATE_ON_PREM,
-        description="The Old Castle, protecting ancient databases behind miles of physical copper and cooling towers."
+        description="Red Hat's Kubernetes Warlord, commanding containerized legions across any datacenter that will host it, hyperscaler or bare metal alike."
+    ),
+    Champion(
+        name="Exadata",
+        faction=FactionType.PRIVATE_ON_PREM,
+        description="Oracle's Engineered Colossus, a purpose-built database fortress fusing hardware and software into one immovable on-prem siege engine."
     )
 ]

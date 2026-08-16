@@ -10,6 +10,7 @@ from src.ui.components import (
     render_weapons_and_flaws,
     render_prophecy,
     render_verdict_strip,
+    render_score_totals,
     render_scorecard
 )
 from src.services.orchestrator import ArenaOrchestrator
@@ -56,7 +57,7 @@ class ArenaViews:
             ("GPU Rebellion (CoreWeave vs AWS)", ("CoreWeave", "AWS", "AI Training Killing Fields")),
             ("Edge Skirmish (Cloudflare vs GCP)", ("Cloudflare", "GCP", "Edge Ambush Terrain")),
             ("Sovereignty Clash (OVHcloud vs Azure)", ("OVHcloud", "Azure", "Sovereignty Fortress")),
-            ("Cost Bleedout (Old Fortress On-Prem vs AWS)", ("Old Fortress On-Prem", "AWS", "Cost Wasteland")),
+            ("Cost Bleedout (Exadata vs AWS)", ("Exadata", "AWS", "Cost Wasteland")),
         ]
         all_champion_names = [c.name for c in DEFAULT_CHAMPIONS] + ["Custom Fighter..."]
         default_field = "AI Training Killing Fields"
@@ -186,6 +187,7 @@ class ArenaViews:
 
         # Render the non-negotiable, plain-language verdict
         render_verdict_strip(chronicle.verdict)
+        render_score_totals(result, champion_a, champion_b)
 
         # Render Second Wind interactives
         st.markdown("### Desperate counter-strike")
@@ -218,7 +220,17 @@ class ArenaViews:
 
         # Render scorecard underneath — one scroll away from the theater above
         st.write("")
-        render_scorecard(result, champion_a, champion_b)
+        render_scorecard(result, champion_a, champion_b, battlefield)
+
+        # Tactical Advantage — the researched capability each side leaned on for
+        # this specific terrain, and the deterministic bonus it actually earned.
+        st.markdown(f"**Tactical Advantage** _(rewards: {battlefield.tactical_rule})_")
+        for champion, capability, bonus in (
+            (champion_a, result.tactical_capability_a, result.tactical_bonus_a),
+            (champion_b, result.tactical_capability_b, result.tactical_bonus_b),
+        ):
+            marker = "🔥 " if bonus == max(result.tactical_bonus_a, result.tactical_bonus_b) and bonus > 0 else ""
+            st.markdown(f"- {marker}**{champion.name}**: _{capability}_ (+{bonus} pts)")
 
         # Decisive blows reasons
         st.markdown("**Decisive blows landed:**")
@@ -298,21 +310,27 @@ class ArenaViews:
             
         # Display summary calculations (Hall of Fame vs Graveyard)
         st.markdown("### Hall of fame")
-        winners = [e.result.winner_name for e in entries]
 
-        
-        # Calculate win/loss frequencies
+        # Calculate win frequencies, both overall and per-battlefield — the
+        # whole point of the battlefield mechanic is that a champion's total
+        # win count can hide "wins the war but loses this terrain" splits.
         win_freq = {}
-        for w in winners:
+        win_by_battlefield = {}
+        for e in entries:
+            w = e.result.winner_name
             win_freq[w] = win_freq.get(w, 0) + 1
+            win_by_battlefield.setdefault(w, {})
+            win_by_battlefield[w][e.battlefield] = win_by_battlefield[w].get(e.battlefield, 0) + 1
         sorted_wins = sorted(win_freq.items(), key=lambda x: x[1], reverse=True)
-        
+
         # Render Hall of Fame leaderboard columns
         st.write("Warlords ranked by decisive conquests:")
         cols = st.columns(min(len(sorted_wins), 4))
         for idx, (champion_name, win_count) in enumerate(sorted_wins[:4]):
             with cols[idx]:
                 st.metric(label=f"Rank #{idx+1} {champion_name}", value=f"{win_count} Wins")
+                breakdown = sorted(win_by_battlefield[champion_name].items(), key=lambda x: x[1], reverse=True)
+                st.caption(" · ".join(f"{field} ({count})" for field, count in breakdown))
                 
         st.markdown("### Graveyard of fallen clouds")
         for entry in entries:

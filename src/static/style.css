@@ -447,6 +447,7 @@ h1, h2, h3, h4 { color: var(--bone); }
     font-size: 10px;
     margin-bottom: 14px;
 }
+.dim-weight { color: var(--cyan); font-weight: 600; }
 .tug-track { height: 4px; background: var(--blood-dim); position: relative; width: 100%; }
 .tug-fill { position: absolute; top: 0; bottom: 0; left: 0; background: linear-gradient(90deg, var(--ember), var(--cyan)); box-shadow: 0 0 8px rgba(176, 38, 255, 0.5); }
 

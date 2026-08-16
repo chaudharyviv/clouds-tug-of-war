@@ -54,23 +54,26 @@ class ArenaOrchestrator:
         if result.second_wind_triggered:
             # Cannot trigger twice
             return result, self.chronicler.write_chronicle(champion_a, champion_b, battlefield, result)
-            
+
         # Mark as triggered
         result.second_wind_triggered = True
-        
-        # Adjust score margins based on the impact
-        # We subtract the impact from the winner's score or add it to the loser's score
-        original_margin = result.margin
-        result.margin = max(0.0, round(original_margin - result.second_wind_impact, 2))
-        
-        # If the margin hits 0 and gets flipped, check if winner changes (Fidelity Law allows rare upsets)
-        if result.margin == 0.0 and result.second_wind_impact > original_margin:
-            # Swap winner and loser names
-            old_winner = result.winner_name
-            result.winner_name = result.loser_name
-            result.loser_name = old_winner
-            result.margin = round(result.second_wind_impact - original_margin, 2)
-            
+
+        # Apply the boost directly to the losing side's actual total score,
+        # then re-derive winner/loser/margin from the updated totals. This
+        # replaces the old margin-only arithmetic, which adjusted `margin`
+        # without ever touching a real score — so the UI had nothing whose
+        # change it could actually show the player.
+        if result.loser_name == champion_a.name:
+            result.score_a = round(result.score_a + result.second_wind_impact, 2)
+        else:
+            result.score_b = round(result.score_b + result.second_wind_impact, 2)
+
+        if result.score_a >= result.score_b:
+            result.winner_name, result.loser_name = champion_a.name, champion_b.name
+        else:
+            result.winner_name, result.loser_name = champion_b.name, champion_a.name
+        result.margin = round(abs(result.score_a - result.score_b), 2)
+
         # Re-write the chronicle reflecting the comeback
         new_chronicle = self.chronicler.write_chronicle(champion_a, champion_b, battlefield, result)
         return result, new_chronicle

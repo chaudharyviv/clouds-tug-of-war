@@ -130,6 +130,24 @@ def render_prophecy(champion_a: Champion, champion_b: Champion):
     )
 
 
+def render_score_totals(result: BattleResult, champion_a: Champion, champion_b: Champion):
+    """
+    Renders the two combatants' actual battle-score totals side by side —
+    the number that Second Wind moves, so activating it has something
+    visible to change.
+    """
+    a_win = result.winner_name == champion_a.name
+    left_class = "dim-val win" if a_win else "dim-val"
+    right_class = "dim-val right-val win" if not a_win else "dim-val right-val"
+    _render_html(f"""
+        <div class="dim-row" style="margin-top:4px;">
+            <div class="{left_class}" style="font-size:20px;">{result.score_a:.1f}</div>
+            <div class="dim-name" style="margin-bottom:0;">Battle score</div>
+            <div class="{right_class}" style="font-size:20px;">{result.score_b:.1f}</div>
+        </div>
+    """)
+
+
 def render_verdict_strip(verdict_text: str):
     """
     Renders the non-negotiable, plain-language verdict — the myth never
@@ -146,10 +164,12 @@ def render_verdict_strip(verdict_text: str):
     )
 
 
-def render_scorecard(result: BattleResult, champion_a: Champion, champion_b: Champion):
+def render_scorecard(result: BattleResult, champion_a: Champion, champion_b: Champion, battlefield: Battlefield = None):
     """
     Renders dimension-by-dimension tug-of-war bars, one scroll below the
-    theater above it, so the numeric truth stays inspectable.
+    theater above it, so the numeric truth stays inspectable. Each dimension
+    is tagged with the battlefield's weight for it, since that weight — not
+    the raw score alone — is what actually decided the fight.
     """
     scorecard_a = result.scorecards.get(champion_a.name)
     scorecard_b = result.scorecards.get(champion_b.name)
@@ -157,6 +177,8 @@ def render_scorecard(result: BattleResult, champion_a: Champion, champion_b: Cha
     if not scorecard_a or not scorecard_b:
         st.warning("Scorecard data missing.")
         return
+
+    weights = battlefield.active_dimensions() if battlefield else {}
 
     rows_html = ""
     for dim in BATTLE_DIMENSIONS:
@@ -170,13 +192,16 @@ def render_scorecard(result: BattleResult, champion_a: Champion, champion_b: Cha
         left_class = "dim-val win" if score_a >= score_b else "dim-val"
         right_class = "dim-val right-val win" if score_b > score_a else "dim-val right-val"
 
+        weight = weights.get(dim)
+        weight_html = f' <span class="dim-weight">&times;{weight:.1f}</span>' if weight else ""
+
         rows_html += (
             '<div class="dim-row">'
             f'<div class="{left_class}">{score_a:.0f}</div>'
             f'<div class="tug-track"><div class="tug-fill" style="width:{pct_a:.0f}%"></div></div>'
             f'<div class="{right_class}">{score_b:.0f}</div>'
             '</div>'
-            f'<div class="dim-name">{html.escape(dim)}</div>'
+            f'<div class="dim-name">{html.escape(dim)}{weight_html}</div>'
         )
 
     _render_html(

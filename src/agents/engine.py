@@ -12,7 +12,8 @@ import json
 # playtested and adjusted without touching the scoring logic itself.
 TACTICAL_BONUS_SCALE = 0.15  # max +15 points at 100% tactical relevance
 SECOND_WIND_BASE_SWING = 20.0  # max base swing at 100% relevance, medium comeback profile
-SECOND_WIND_UNDERDOG_CAP = 1.5  # underdog factor never exceeds this multiplier
+SECOND_WIND_UNDERDOG_CAP = 1.5  # underdog factor at a near-tied margin
+SECOND_WIND_UNDERDOG_FLOOR = 1.0  # underdog factor at a huge deficit
 
 
 class RawScores(BaseModel):
@@ -139,6 +140,16 @@ class FightEngine(BaseAgent):
             f"For each of the following dimensions — the ONLY ones this battlefield scores — provide an "
             f"objective score from 0 to 100 for both A and B:\n"
             f"{dims_formatted}\n\n"
+            f"Anchor every score to the evidence in the research notes above, not to how impressive the name "
+            f"sounds. Use these bands as a floor/ceiling, not a target:\n"
+            f"  90-100 = dominant / industry-leading, backed by specific proof\n"
+            f"  75-89  = strong, clearly ahead on this dimension\n"
+            f"  60-74  = competitive, holds its own\n"
+            f"  40-59  = adequate, present but unremarkable\n"
+            f"  20-39  = weak, notable gap\n"
+            f"  0-19   = effectively absent on this dimension\n"
+            f"A score above 85 requires a concrete fact in the notes to justify it — do not default to the "
+            f"80s-90s range just because a combatant is a well-known hyperscaler.\n\n"
             f"Provide your evaluation in a JSON structure containing 'scores_a' and 'scores_b' dicts mapping dimension names to float scores.\n"
             f"Also include 'decisive_blows' representing 2-3 technical reasons that swung key dimensions.\n\n"
             f"Tactical Advantage: this battlefield rewards '{battlefield.tactical_rule}'. From Combatant A's "
@@ -199,12 +210,17 @@ class FightEngine(BaseAgent):
         )
 
         # Second Wind impact = capability relevance x battlefield comeback profile x
-        # underdog factor. A close fight lets the loser swing harder if they connect;
-        # this replaces the old margin-derived formula, which ignored the actual
-        # researched capability entirely.
+        # underdog factor. The closer the fight, the more a well-placed strike can
+        # actually convert — a near-tied margin gets the full 1.5x, a blowout decays
+        # toward 1.0x. (Inverted from an earlier version that rewarded bigger deficits
+        # with a stronger swing, which fought the underdog fantasy instead of serving it.)
         comeback_multiplier = COMEBACK_MULTIPLIER[battlefield.comeback_profile]
         winner_total = max(total_score_a, total_score_b)
-        underdog_factor = min(1.0 + (margin / winner_total) * 0.5, SECOND_WIND_UNDERDOG_CAP) if winner_total > 0 else 1.0
+        underdog_range = SECOND_WIND_UNDERDOG_CAP - SECOND_WIND_UNDERDOG_FLOOR
+        underdog_factor = (
+            SECOND_WIND_UNDERDOG_CAP - min(margin / winner_total, underdog_range)
+            if winner_total > 0 else SECOND_WIND_UNDERDOG_CAP
+        )
         second_wind_impact = round(
             (second_wind_relevance / 100.0) * SECOND_WIND_BASE_SWING * comeback_multiplier * underdog_factor,
             1

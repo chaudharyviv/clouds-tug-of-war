@@ -30,7 +30,7 @@ BATTLEFIELDS: List[Battlefield] = [
         secondary_dimensions={
             "Raw Scale & Gravity": 1.0
         },
-        tactical_rule="Specialized GPU/accelerator infrastructure earns a Tactical Advantage.",
+        tactical_rule="Demonstrated specialized GPU/accelerator infrastructure earns Tactical Advantage.",
         comeback_profile="high"
     ),
     Battlefield(
@@ -45,7 +45,7 @@ BATTLEFIELDS: List[Battlefield] = [
             "Operational Simplicity": 1.5,
             "Lock-in vs Freedom": 1.0
         },
-        tactical_rule="Demonstrably lower sustainable unit economics earns a Tactical Advantage.",
+        tactical_rule="Demonstrated lower sustainable unit economics earns Tactical Advantage.",
         comeback_profile="low"
     ),
     Battlefield(
@@ -60,7 +60,7 @@ BATTLEFIELDS: List[Battlefield] = [
             "Economic Blood Cost": 1.5,
             "Operational Simplicity": 1.25
         },
-        tactical_rule="The ability to escape proprietary dependencies without architectural pain earns a Tactical Advantage.",
+        tactical_rule="Demonstrated ability to escape proprietary dependencies without architectural pain earns Tactical Advantage.",
         comeback_profile="medium"
     ),
     Battlefield(
@@ -75,7 +75,7 @@ BATTLEFIELDS: List[Battlefield] = [
             "Resilience & Global Reach": 1.5,
             "Lock-in vs Freedom": 1.0
         },
-        tactical_rule="Local control and data residency guarantees earn a Tactical Advantage.",
+        tactical_rule="Demonstrated local control and data-residency capabilities earn Tactical Advantage.",
         comeback_profile="medium"
     ),
     Battlefield(
@@ -91,7 +91,7 @@ BATTLEFIELDS: List[Battlefield] = [
             "Speed of Innovation / Specialization": 1.25,
             "Resilience & Global Reach": 1.0
         },
-        tactical_rule="Execution close to the user/device earns a Tactical Advantage.",
+        tactical_rule="Demonstrated ability to execute workloads close to users/devices earns Tactical Advantage.",
         comeback_profile="very_high"
     )
 ]

@@ -45,11 +45,16 @@ def render_battlefield_banner(battlefield: Battlefield):
     """)
 
 
-def render_vs_row(champion_a: Champion, champion_b: Champion, result: BattleResult = None):
+def render_vs_row(champion_a: Champion, champion_b: Champion, result: BattleResult = None, battlefield: Battlefield = None):
     """
     Renders the two fighter panels with diagonal-cut edges and a VS mark
     between them, matching the fight-card mockup. Victor/defeated states
     (glow / desaturate) are redundant with the verdict strip on purpose.
+
+    The three stats shown are the battlefield's own top dimensions (primary
+    first, then secondary) when a battlefield is supplied — showing a fixed
+    "AI / GPU War Power" stat on a Sovereignty Fortress fight would render a
+    dimension that was never actually scored.
     """
     state_a, state_b = "", ""
     if result:
@@ -61,10 +66,15 @@ def render_vs_row(champion_a: Champion, champion_b: Champion, result: BattleResu
     scorecard_a = result.scorecards.get(champion_a.name) if result else None
     scorecard_b = result.scorecards.get(champion_b.name) if result else None
 
+    if battlefield:
+        stat_dims = (list(battlefield.primary_dimensions) + list(battlefield.secondary_dimensions))[:3]
+    else:
+        stat_dims = STAT_BLOCK_DIMENSIONS
+
     def fighter_html(champion: Champion, side: str, state: str, scorecard):
         prof = champion.mythic_profile
         epithet = prof.epithet if prof else "The Challenger"
-        stat_rows = _stat_rows(scorecard, STAT_BLOCK_DIMENSIONS)
+        stat_rows = _stat_rows(scorecard, stat_dims)
         stats_html = "".join(
             f'<div class="stat-row"><div class="stat-label">{html.escape(dim)}</div>'
             f'<div class="bar-track"><div class="bar-fill" style="width:{score:.0f}%"></div></div></div>'
@@ -141,9 +151,52 @@ def render_score_totals(result: BattleResult, champion_a: Champion, champion_b: 
     _render_html(f"""
         <div class="dim-row" style="margin-top:4px;">
             <div class="{left_class}" style="font-size:20px;">{result.score_a:.1f}</div>
-            <div class="dim-name" style="margin-bottom:0;">Battle score</div>
+            <div class="dim-name" style="margin-bottom:0;">Power balance</div>
             <div class="{right_class}" style="font-size:20px;">{result.score_b:.1f}</div>
         </div>
+    """)
+
+
+def render_tactical_advantage(result: BattleResult, champion_a: Champion, champion_b: Champion, battlefield: Battlefield):
+    """
+    Renders the researched capability each side leaned on for this terrain,
+    styled as an in-fiction battle beat rather than a labeled data dump —
+    the number is secondary, the claim is the point.
+    """
+    higher = max(result.tactical_bonus_a, result.tactical_bonus_b)
+    rows_html = ""
+    for champion, capability, bonus in (
+        (champion_a, result.tactical_capability_a, result.tactical_bonus_a),
+        (champion_b, result.tactical_capability_b, result.tactical_bonus_b),
+    ):
+        seized = " seized" if bonus > 0 and bonus == higher else ""
+        rows_html += (
+            f'<div class="tactical-row{seized}">'
+            f'<span class="who">{html.escape(champion.name)}</span>'
+            f'<span class="claim">{html.escape(capability or "No standout capability identified")}</span>'
+            f'<span class="bonus">+{bonus:.1f}</span>'
+            f'</div>'
+        )
+    _render_html(f"""
+        <div class="tactical-banner">
+            <div class="tactical-title">Tactical Advantage</div>
+            <div class="tactical-subtitle">This terrain favors {html.escape(battlefield.rewards)}</div>
+            {rows_html}
+        </div>
+    """)
+
+
+def render_decisive_blows(blows: list[str]):
+    """
+    Renders the fight's decisive technical reasons as a battle log rather
+    than a bare markdown bullet list.
+    """
+    if not blows:
+        return
+    items_html = "".join(f"<li>{html.escape(b)}</li>" for b in blows)
+    _render_html(f"""
+        <div class="battle-log-title">Decisive blows landed</div>
+        <ul class="battle-log">{items_html}</ul>
     """)
 
 
@@ -174,7 +227,7 @@ def render_scorecard(result: BattleResult, champion_a: Champion, champion_b: Cha
     scorecard_b = result.scorecards.get(champion_b.name)
 
     if not scorecard_a or not scorecard_b:
-        st.warning("Scorecard data missing.")
+        st.warning("The scorecard was lost somewhere between the battlefield and the archive.")
         return
 
     weights = battlefield.active_dimensions() if battlefield else {}

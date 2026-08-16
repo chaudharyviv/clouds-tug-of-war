@@ -11,7 +11,9 @@ from src.ui.components import (
     render_prophecy,
     render_verdict_strip,
     render_score_totals,
-    render_scorecard
+    render_scorecard,
+    render_tactical_advantage,
+    render_decisive_blows
 )
 from src.services.orchestrator import ArenaOrchestrator
 from src.services.codex import CodexService
@@ -43,11 +45,11 @@ class ArenaViews:
         # once. Keeping these on mutually exclusive branches (rather than trying to
         # sync defaults into the same widgets) avoids Streamlit's keyed-widget state
         # sticking to a stale value when you switch between the two.
-        st.markdown("### Choose your fighters")
+        st.markdown("### Summon your champions")
         fighter_mode = st.segmented_control(
             "Fighter selection mode",
-            options=["Grudge match", "Custom A vs B"],
-            default="Custom A vs B",
+            options=["Ancient Grudge", "Choose Your Champions"],
+            default="Choose Your Champions",
             required=True,
             label_visibility="collapsed",
             key="fighter_mode"
@@ -59,12 +61,12 @@ class ArenaViews:
             ("Sovereignty Clash (OVHcloud vs Azure)", ("OVHcloud", "Azure", "Sovereignty Fortress")),
             ("Cost Bleedout (Exadata vs AWS)", ("Exadata", "AWS", "Cost Wasteland")),
         ]
-        all_champion_names = [c.name for c in DEFAULT_CHAMPIONS] + ["Custom Fighter..."]
+        all_champion_names = [c.name for c in DEFAULT_CHAMPIONS] + ["Forge a new challenger..."]
         default_field = "AI Training Killing Fields"
 
-        if fighter_mode == "Grudge match":
+        if fighter_mode == "Ancient Grudge":
             selected_grudge_idx = st.selectbox(
-                "Quick-load a legendary clash of cloud realms:",
+                "Revisit a feud already written into legend:",
                 range(len(grudge_matches)),
                 format_func=lambda i: grudge_matches[i][0],
                 key="grudge_idx"
@@ -78,34 +80,34 @@ class ArenaViews:
             col1, col2 = st.columns(2)
 
             with col1:
-                st.markdown("**Combatant A**")
+                st.markdown("**First Champion**")
                 choice_a = st.selectbox(
-                    "Select Champion A:",
+                    "Summon your first champion:",
                     all_champion_names,
                     key="choice_a"
                 )
 
-                if choice_a == "Custom Fighter...":
-                    name_a = st.text_input("Enter Name A:", value="Custom Warlord A")
-                    faction_a = st.selectbox("Faction A:", [f.value for f in FactionType], key="fac_a")
-                    desc_a = st.text_area("Description A:", "A specialized challenger entering the arena.")
+                if choice_a == "Forge a new challenger...":
+                    name_a = st.text_input("Give them a name:", value="Custom Warlord A", key="name_a")
+                    faction_a = st.selectbox("Their allegiance:", [f.value for f in FactionType], key="fac_a")
+                    desc_a = st.text_area("Their legend so far:", "A nameless challenger entering the arena.", key="desc_a")
                     champion_a = Champion(name=name_a, faction=FactionType(faction_a), description=desc_a)
                 else:
                     champion_a = next(c for c in DEFAULT_CHAMPIONS if c.name == choice_a)
 
             with col2:
-                st.markdown("**Combatant B**")
+                st.markdown("**Rival Champion**")
                 choice_b = st.selectbox(
-                    "Select Champion B:",
+                    "Summon their rival:",
                     all_champion_names,
                     index=all_champion_names.index("CoreWeave") if "CoreWeave" in all_champion_names else 1,
                     key="choice_b"
                 )
 
-                if choice_b == "Custom Fighter...":
-                    name_b = st.text_input("Enter Name B:", value="Custom Warlord B")
-                    faction_b = st.selectbox("Faction B:", [f.value for f in FactionType], key="fac_b")
-                    desc_b = st.text_area("Description B:", "A specialized challenger entering the arena.")
+                if choice_b == "Forge a new challenger...":
+                    name_b = st.text_input("Give them a name:", value="Custom Warlord B", key="name_b")
+                    faction_b = st.selectbox("Their allegiance:", [f.value for f in FactionType], key="fac_b")
+                    desc_b = st.text_area("Their legend so far:", "A nameless challenger entering the arena.", key="desc_b")
                     champion_b = Champion(name=name_b, faction=FactionType(faction_b), description=desc_b)
                 else:
                     champion_b = next(c for c in DEFAULT_CHAMPIONS if c.name == choice_b)
@@ -115,23 +117,23 @@ class ArenaViews:
         # 2. Battlefield Selection — always independent of fighter mode. Suggests
         # the grudge match's usual terrain as a starting point, but you're always
         # free to override it either way.
-        st.markdown("### Select the battlefield")
+        st.markdown("### Choose the battleground")
         field_names = [b.name for b in BATTLEFIELDS]
         field_choice = st.selectbox(
-            "The terrain dictates the scoring modifiers and laws of war:",
+            "The terrain writes its own laws of war:",
             field_names,
             index=field_names.index(default_field) if default_field in field_names else 0
         )
         battlefield = next(b for b in BATTLEFIELDS if b.name == field_choice)
 
-        st.markdown(f"**Field rules:** _Rewards {battlefield.rewards}_ | _Suffers {battlefield.suffers}_")
+        st.markdown(f"**This ground decrees:** _Favors {battlefield.rewards}_ | _Suffers {battlefield.suffers}_")
 
         st.write("")
         trigger_battle = st.button("Stage the slaughter", width="stretch")
 
         if trigger_battle:
             if champion_a.name == champion_b.name:
-                st.error("A realm cannot declare war against itself. Select distinct fighters.")
+                st.error("A realm cannot wage war upon itself. Choose two distinct champions.")
                 return
 
             st.session_state["battle_state"] = "fighting"
@@ -153,12 +155,12 @@ class ArenaViews:
         
         # Check if we have pre-computed values
         if "ritual_executed" not in st.session_state:
-            with st.spinner("⚔️ Summoning the War Council... War Scout is researching, Myth Weaver is forging..."):
+            with st.spinner("⚔️ The War Council convenes... War Scout rides ahead, Myth Weaver forges the legend..."):
                 try:
                     c_a, c_b, notes_a, notes_b, result, chronicle = self.orchestrator.perform_ritual(
                         champion_a, champion_b, battlefield
                     )
-                    
+
                     st.session_state["champion_a"] = c_a
                     st.session_state["champion_b"] = c_b
                     st.session_state["notes_a"] = notes_a
@@ -167,8 +169,8 @@ class ArenaViews:
                     st.session_state["battle_chronicle"] = chronicle
                     st.session_state["ritual_executed"] = True
                 except Exception as e:
-                    st.error(f"The War Council failed: {e}")
-                    if st.button("Return to Setup"):
+                    st.error(f"The War Council has faltered: {e}")
+                    if st.button("Retreat to the War Room"):
                         self._reset_battle_state()
                     return
                     
@@ -179,7 +181,7 @@ class ArenaViews:
         chronicle = st.session_state["battle_chronicle"]
         
         # Render dynamic versus row (diagonal fighter panels, victor/defeated states)
-        render_vs_row(champion_a, champion_b, result)
+        render_vs_row(champion_a, champion_b, result, battlefield)
         render_weapons_and_flaws(champion_a, champion_b)
 
         st.write("")
@@ -196,13 +198,13 @@ class ArenaViews:
 
         if not is_triggered:
             st.markdown(
-                f"The losing side (**{result.loser_name}**) has **1 Second Wind comeback** available. "
-                "Triggering this launches a research-grounded counter beat and updates scores."
+                f"The fallen (**{result.loser_name}**) may still call upon **one Second Wind** — "
+                "a last, research-forged strike that could yet turn the tide."
             )
 
             # Click action triggers comeback recalculation
-            if st.button(f"Activate Second Wind for {result.loser_name}", width="stretch"):
-                with st.spinner("Gathering core strength from research..."):
+            if st.button(f"Call {result.loser_name}'s Second Wind", width="stretch"):
+                with st.spinner("Drawing strength from the old records..."):
                     updated_result, updated_chronicle = self.orchestrator.apply_second_wind(
                         champion_a, champion_b, battlefield, result
                     )
@@ -222,20 +224,10 @@ class ArenaViews:
         st.write("")
         render_scorecard(result, champion_a, champion_b, battlefield)
 
-        # Tactical Advantage — the researched capability each side leaned on for
-        # this specific terrain, and the deterministic bonus it actually earned.
-        st.markdown(f"**Tactical Advantage** _(rewards: {battlefield.tactical_rule})_")
-        for champion, capability, bonus in (
-            (champion_a, result.tactical_capability_a, result.tactical_bonus_a),
-            (champion_b, result.tactical_capability_b, result.tactical_bonus_b),
-        ):
-            marker = "🔥 " if bonus == max(result.tactical_bonus_a, result.tactical_bonus_b) and bonus > 0 else ""
-            st.markdown(f"- {marker}**{champion.name}**: _{capability}_ (+{bonus} pts)")
-
-        # Decisive blows reasons
-        st.markdown("**Decisive blows landed:**")
-        for blow in result.decisive_blows:
-            st.markdown(f"- {blow}")
+        # Tactical Advantage and Decisive Blows — the researched material behind
+        # the verdict, styled as battle beats rather than an engineering readout.
+        render_tactical_advantage(result, champion_a, champion_b, battlefield)
+        render_decisive_blows(result.decisive_blows)
 
         st.markdown("---")
 
@@ -245,10 +237,10 @@ class ArenaViews:
 
         # Inspectable Backbone details (Fidelity Law verification)
         st.markdown("---")
-        with st.expander("Inspect technical backbone (Fidelity Law)"):
+        with st.expander("Peer behind the myth (Fidelity Law)"):
             col_a, col_b = st.columns(2)
             with col_a:
-                st.markdown(f"**{champion_a.name} Research Data:**")
+                st.markdown(f"**What the Scouts uncovered — {champion_a.name}:**")
                 st.json({
                     "capabilities": notes_a.capabilities,
                     "limitations": notes_a.limitations,
@@ -256,18 +248,18 @@ class ArenaViews:
                     "sources": notes_a.source_links
                 })
             with col_b:
-                st.markdown(f"**{champion_b.name} Research Data:**")
+                st.markdown(f"**What the Scouts uncovered — {champion_b.name}:**")
                 st.json({
                     "capabilities": notes_b.capabilities,
                     "limitations": notes_b.limitations,
                     "pricing": notes_b.pricing_signal,
                     "sources": notes_b.source_links
                 })
-                
+
         # Navigation / Storage actions
         col_nav1, col_nav2 = st.columns(2)
         with col_nav1:
-            if st.button("Save fight to Codex history",width="stretch"):
+            if st.button("Inscribe this battle into the Codex", width="stretch"):
                 entry = CodexEntry(
                     id=str(uuid.uuid4())[:8],
                     timestamp=datetime.utcnow(),
@@ -278,7 +270,7 @@ class ArenaViews:
                     chronicle=chronicle
                 )
                 CodexService.save_entry(entry)
-                st.success("Fight logged to Codex!")
+                st.success("The battle is etched into the Codex.")
         with col_nav2:
             if st.button("Stage another fight", width="stretch"):
                 self._reset_battle_state()
@@ -303,7 +295,7 @@ class ArenaViews:
         
         if not entries:
             st.info("The archives are empty. Stage and save duels to fill the chronicle walls.")
-            if st.button("Back to Setup"):
+            if st.button("Return to the War Room"):
                 st.session_state["app_tab"] = "Arena"
                 st.rerun()
             return
@@ -340,17 +332,18 @@ class ArenaViews:
             )
             
         st.markdown("---")
-        st.markdown("### Browsable archives")
+        st.markdown("### The archive halls")
 
         for e in reversed(entries):
             with st.expander(f"{e.combatant_a} vs {e.combatant_b} on {e.battlefield} ({e.timestamp.strftime('%Y-%m-%d %H:%M')})"):
                 st.markdown(f"**Verdict:** {e.chronicle.verdict}")
-                st.markdown(f"**Second Wind Used:** {e.result.second_wind_triggered}")
+                second_wind_text = "Called upon" if e.result.second_wind_triggered else "Not needed"
+                st.markdown(f"**Second Wind:** {second_wind_text}")
                 st.markdown(f"_Saga:_ {e.chronicle.saga}")
-                
-        if st.button("Clear Archives"):
+
+        if st.button("Burn the archives"):
             CodexService.clear_codex()
-            st.success("Archives purged.")
+            st.success("The archives are ash.")
             st.rerun()
 
     def _reset_battle_state(self):

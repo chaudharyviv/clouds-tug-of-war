@@ -397,6 +397,71 @@ h1, h2, h3, h4 { color: var(--bone); }
     text-shadow: 0 0 8px rgba(0, 234, 255, 0.6);
 }
 
+/* ---------- Tactical advantage ---------- */
+.tactical-banner {
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--ember);
+    background: rgba(176, 38, 255, 0.05);
+    padding: 16px 18px;
+    margin: 18px 0 14px;
+}
+.tactical-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 4px;
+}
+.tactical-subtitle {
+    font-style: italic;
+    color: var(--bone-dim);
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+.tactical-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 6px 0;
+    color: var(--bone-dim);
+}
+.tactical-row:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.tactical-row .claim { font-style: italic; color: var(--bone); flex: 1; }
+.tactical-row .who { color: var(--bone-dim); font-weight: 600; white-space: nowrap; }
+.tactical-row.seized .who { color: var(--ember); text-shadow: 0 0 6px rgba(176, 38, 255, 0.5); }
+.tactical-row.seized .claim { color: var(--bone); }
+.tactical-row .bonus { font-family: 'IBM Plex Mono', monospace; font-size: 12px; white-space: nowrap; color: var(--bone-dim); }
+.tactical-row.seized .bonus { color: var(--ember); }
+
+/* ---------- Battle log (decisive blows) ---------- */
+.battle-log-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blood);
+    margin: 22px 0 10px;
+}
+.battle-log { list-style: none; margin: 0; padding: 0; }
+.battle-log li {
+    position: relative;
+    padding: 6px 0 6px 22px;
+    color: var(--bone);
+    font-size: 14px;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.battle-log li:last-child { border-bottom: none; }
+.battle-log li::before {
+    content: "⚔";
+    position: absolute;
+    left: 0;
+    color: var(--blood);
+    text-shadow: 0 0 6px rgba(255, 45, 149, 0.6);
+}
+
 .second-wind-reason {
     font-size: 0.92rem;
     color: var(--bone-dim);

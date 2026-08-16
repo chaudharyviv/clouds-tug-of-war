@@ -47,16 +47,16 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("### Engine status")
+    st.markdown("### The Council's instruments")
 
     # Get primary model from config for display
     primary_model = os.getenv("PRIMARY_MODEL", "openai/gpt-4o")
     model_display = primary_model.replace("openai/", "OpenAI ").replace("anthropic/", "Anthropic ")
 
     st.markdown(
-        f"**Model:** {model_display}<br/>"
-        f"**Search Broker:** Tavily API<br/>"
-        f"**Fidelity Law:** Active",
+        f"**Oracle consulted:** {model_display}<br/>"
+        f"**Scouts draw from:** Tavily API<br/>"
+        f"**Fidelity Law:** Upheld",
         unsafe_allow_html=True
     )
     st.markdown("---")

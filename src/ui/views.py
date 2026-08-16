@@ -65,11 +65,18 @@ class ArenaViews:
         default_field = "AI Training Killing Fields"
 
         if fighter_mode == "Ancient Grudge":
+            st.markdown(
+                "<span style='color: var(--blood); font-family: \"IBM Plex Mono\", monospace; "
+                "font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;'>"
+                "Revisit a feud already written into legend:</span>",
+                unsafe_allow_html=True
+            )
             selected_grudge_idx = st.selectbox(
-                "Revisit a feud already written into legend:",
+                "grudge",
                 range(len(grudge_matches)),
                 format_func=lambda i: grudge_matches[i][0],
-                key="grudge_idx"
+                key="grudge_idx",
+                label_visibility="collapsed"
             )
             grudge_a, grudge_b, default_field = grudge_matches[selected_grudge_idx][1]
             champion_a = next(c for c in DEFAULT_CHAMPIONS if c.name == grudge_a)
@@ -80,11 +87,17 @@ class ArenaViews:
             col1, col2 = st.columns(2)
 
             with col1:
-                st.markdown("**First Champion**")
+                st.markdown(
+                    "<span style='color: var(--ember); font-family: \"IBM Plex Mono\", monospace; "
+                    "font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;'>"
+                    "Summon your first champion:</span>",
+                    unsafe_allow_html=True
+                )
                 choice_a = st.selectbox(
-                    "Summon your first champion:",
-                    all_champion_names,
-                    key="choice_a"
+                    label="champion_a",
+                    options=all_champion_names,
+                    key="choice_a",
+                    label_visibility="collapsed"
                 )
 
                 if choice_a == "Forge a new challenger...":
@@ -96,12 +109,18 @@ class ArenaViews:
                     champion_a = next(c for c in DEFAULT_CHAMPIONS if c.name == choice_a)
 
             with col2:
-                st.markdown("**Rival Champion**")
+                st.markdown(
+                    "<span style='color: var(--cyan); font-family: \"IBM Plex Mono\", monospace; "
+                    "font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;'>"
+                    "Summon their rival:</span>",
+                    unsafe_allow_html=True
+                )
                 choice_b = st.selectbox(
-                    "Summon their rival:",
-                    all_champion_names,
+                    label="champion_b",
+                    options=all_champion_names,
                     index=all_champion_names.index("CoreWeave") if "CoreWeave" in all_champion_names else 1,
-                    key="choice_b"
+                    key="choice_b",
+                    label_visibility="collapsed"
                 )
 
                 if choice_b == "Forge a new challenger...":
@@ -117,12 +136,19 @@ class ArenaViews:
         # 2. Battlefield Selection — always independent of fighter mode. Suggests
         # the grudge match's usual terrain as a starting point, but you're always
         # free to override it either way.
-        st.markdown("### Choose the battleground")
+        st.markdown(
+            "<span style='color: var(--ember); font-family: \"IBM Plex Mono\", monospace; "
+            "font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em;'>"
+            "Choose the battleground:</span>",
+            unsafe_allow_html=True
+        )
         field_names = [b.name for b in BATTLEFIELDS]
         field_choice = st.selectbox(
-            "The terrain writes its own laws of war:",
+            "battlefield",
             field_names,
-            index=field_names.index(default_field) if default_field in field_names else 0
+            index=field_names.index(default_field) if default_field in field_names else 0,
+            label_visibility="collapsed",
+            help="Each battlefield rewards different dimensions — choose wisely."
         )
         battlefield = next(b for b in BATTLEFIELDS if b.name == field_choice)
 
